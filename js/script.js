@@ -1,11 +1,26 @@
 const urlInput = document.getElementById("url");
 const pasteBtn = document.getElementById("pasteBtn");
 const clearBtn = document.getElementById("clearBtn");
-const downloadBtn = document.getElementById("downloadBtn");
+const checkBtn = document.getElementById("checkBtn");
 const statusBox = document.getElementById("status");
+const resultBox = document.getElementById("result");
+const resultTitle = document.getElementById("resultTitle");
+const resultBadge = document.getElementById("resultBadge");
+const resultText = document.getElementById("resultText");
 
 function setStatus(text) {
   statusBox.textContent = text;
+}
+
+function showResult(title, badge, text) {
+  resultBox.classList.remove("hidden");
+  resultTitle.textContent = title;
+  resultBadge.textContent = badge;
+  resultText.textContent = text;
+}
+
+function hideResult() {
+  resultBox.classList.add("hidden");
 }
 
 pasteBtn.addEventListener("click", async () => {
@@ -17,6 +32,7 @@ pasteBtn.addEventListener("click", async () => {
     }
 
     urlInput.value = text.trim();
+    urlInput.focus();
     setStatus("Link yapışdırıldı.");
   } catch {
     setStatus("Clipboard oxunmadı.");
@@ -26,14 +42,16 @@ pasteBtn.addEventListener("click", async () => {
 clearBtn.addEventListener("click", () => {
   urlInput.value = "";
   setStatus("Təmizləndi.");
+  hideResult();
   urlInput.focus();
 });
 
-downloadBtn.addEventListener("click", () => {
+checkBtn.addEventListener("click", () => {
   const value = urlInput.value.trim();
 
   if (!value) {
-    setStatus("Əvvəlcə TikTok linki yapışdır.");
+    setStatus("Əvvəlcə link yapışdır.");
+    hideResult();
     return;
   }
 
@@ -43,12 +61,19 @@ downloadBtn.addEventListener("click", () => {
 
     if (!host.includes("tiktok.com")) {
       setStatus("Düzgün TikTok linki yaz.");
+      hideResult();
       return;
     }
 
-    setStatus("Hazırdır. İndi backend/API qoşula bilər.");
+    setStatus("Processing...");
+    showResult(
+      "Link checked",
+      "Valid",
+      "This is a clean UI placeholder. You can connect your own compliant backend later."
+    );
   } catch {
     setStatus("Link düzgün deyil.");
+    hideResult();
   }
 });
 
@@ -56,6 +81,7 @@ urlInput.addEventListener("input", () => {
   if (urlInput.value.trim()) {
     setStatus("Link tapıldı.");
   } else {
-    setStatus("Ready.");
+    setStatus("Ready when you are.");
+    hideResult();
   }
 });
