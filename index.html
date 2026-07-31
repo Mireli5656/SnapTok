@@ -1,42 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="az">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
   <title>SnapTok</title>
-
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+  <main class="app">
+    <section class="card">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">S</div>
+        <div>
+          <h1>SnapTok</h1>
+          <p>Simple, fast and clean link checker.</p>
+        </div>
+      </div>
 
-  <div class="container">
+      <div class="hero">
+        <h2>Paste your TikTok link</h2>
+        <p>Lightweight interface, fast input, no clutter.</p>
+      </div>
 
-    <h1>SnapTok</h1>
+      <label class="sr-only" for="url">TikTok URL</label>
+      <input
+        id="url"
+        type="url"
+        inputmode="url"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="https://www.tiktok.com/@username/video/..."
+      />
 
-    <p class="subtitle">
-      Simple, fast and free TikTok video downloader.
-    </p>
+      <div class="actions">
+        <button id="pasteBtn" class="btn secondary" type="button">Paste</button>
+        <button id="clearBtn" class="btn ghost" type="button">Clear</button>
+      </div>
 
-    <input
-      type="text"
-      id="url"
-      placeholder="Paste TikTok URL here..."
-    >
+      <button id="checkBtn" class="btn primary" type="button">
+        Check Link
+      </button>
 
-    <div class="buttons">
-      <button id="pasteBtn">Paste</button>
-      <button id="clearBtn">Clear</button>
-    </div>
+      <div id="status" class="status" aria-live="polite">
+        Ready when you are.
+      </div>
 
-    <button id="downloadBtn" class="download">
-      Download (No Watermark)
-    </button>
+      <div id="result" class="result hidden">
+        <div class="result-head">
+          <strong id="resultTitle">Ready</strong>
+          <span id="resultBadge" class="badge">Idle</span>
+        </div>
+        <p id="resultText">Your link will appear here after validation.</p>
+      </div>
 
-    <p id="status">Ready.</p>
-
-  </div>
+      <div class="features">
+        <div class="feature">
+          <strong>No clutter</strong>
+          <span>Minimal design</span>
+        </div>
+        <div class="feature">
+          <strong>Fast UI</strong>
+          <span>Lightweight</span>
+        </div>
+        <div class="feature">
+          <strong>Mobile friendly</strong>
+          <span>Responsive layout</span>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <script src="js/script.js"></script>
-
 </body>
-</html>
+        </html>
