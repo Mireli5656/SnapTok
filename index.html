@@ -14,23 +14,23 @@
         <div class="logo" aria-hidden="true">S</div>
         <div>
           <h1>SnapTok</h1>
-          <p>Simple, fast and clean link checker.</p>
+          <p>Simple, fast and clean link tool.</p>
         </div>
       </div>
 
       <div class="hero">
-        <h2>Paste your TikTok link</h2>
-        <p>Lightweight interface, fast input, no clutter.</p>
+        <h2>Paste your link</h2>
+        <p>Minimal design, fast input, no clutter.</p>
       </div>
 
-      <label class="sr-only" for="url">TikTok URL</label>
+      <label class="sr-only" for="url">Link</label>
       <input
         id="url"
         type="url"
         inputmode="url"
         autocomplete="off"
         spellcheck="false"
-        placeholder="https://www.tiktok.com/@username/video/..."
+        placeholder="https://..."
       />
 
       <div class="actions">
@@ -38,8 +38,8 @@
         <button id="clearBtn" class="btn ghost" type="button">Clear</button>
       </div>
 
-      <button id="checkBtn" class="btn primary" type="button">
-        Check Link
+      <button id="downloadBtn" class="btn primary" type="button">
+        Download
       </button>
 
       <div id="status" class="status" aria-live="polite">
@@ -51,13 +51,13 @@
           <strong id="resultTitle">Ready</strong>
           <span id="resultBadge" class="badge">Idle</span>
         </div>
-        <p id="resultText">Your link will appear here after validation.</p>
+        <p id="resultText">Your result will appear here.</p>
       </div>
 
       <div class="features">
         <div class="feature">
           <strong>No clutter</strong>
-          <span>Minimal design</span>
+          <span>Simple interface</span>
         </div>
         <div class="feature">
           <strong>Fast UI</strong>
