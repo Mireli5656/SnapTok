@@ -1,7 +1,7 @@
 const urlInput = document.getElementById("url");
 const pasteBtn = document.getElementById("pasteBtn");
 const clearBtn = document.getElementById("clearBtn");
-const checkBtn = document.getElementById("checkBtn");
+const downloadBtn = document.getElementById("downloadBtn");
 const statusBox = document.getElementById("status");
 const resultBox = document.getElementById("result");
 const resultTitle = document.getElementById("resultTitle");
@@ -21,6 +21,11 @@ function showResult(title, badge, text) {
 
 function hideResult() {
   resultBox.classList.add("hidden");
+}
+
+function extractFirstUrl(text) {
+  const match = text.match(/https?:\/\/[^\s]+/i);
+  return match ? match[0].trim() : "";
 }
 
 pasteBtn.addEventListener("click", async () => {
@@ -46,35 +51,29 @@ clearBtn.addEventListener("click", () => {
   urlInput.focus();
 });
 
-checkBtn.addEventListener("click", () => {
-  const value = urlInput.value.trim();
+downloadBtn.addEventListener("click", () => {
+  const rawValue = urlInput.value.trim();
+  const value = extractFirstUrl(rawValue);
 
-  if (!value) {
+  if (!rawValue) {
     setStatus("Əvvəlcə link yapışdır.");
     hideResult();
     return;
   }
 
-  try {
-    const parsed = new URL(value);
-    const host = parsed.hostname.toLowerCase();
-
-    if (!host.includes("tiktok.com")) {
-      setStatus("Düzgün TikTok linki yaz.");
-      hideResult();
-      return;
-    }
-
-    setStatus("Processing...");
-    showResult(
-      "Link checked",
-      "Valid",
-      "This is a clean UI placeholder. You can connect your own compliant backend later."
-    );
-  } catch {
-    setStatus("Link düzgün deyil.");
+  if (!value) {
+    setStatus("Heç bir link tapılmadı.");
     hideResult();
+    return;
   }
+
+  urlInput.value = value;
+  setStatus("Processing...");
+  showResult(
+    "Link ready",
+    "Valid",
+    "The first link in the pasted text was extracted successfully."
+  );
 });
 
 urlInput.addEventListener("input", () => {
