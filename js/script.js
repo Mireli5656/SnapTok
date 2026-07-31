@@ -1,4 +1,3 @@
-// HTML Elementlərini seçirik
 const urlInput = document.getElementById("url");
 const pasteBtn = document.getElementById("pasteBtn");
 const clearBtn = document.getElementById("clearBtn");
@@ -9,13 +8,11 @@ const resultTitle = document.getElementById("resultTitle");
 const resultBadge = document.getElementById("resultBadge");
 const resultText = document.getElementById("resultText");
 
-// Status (bildiriş) mesajını yeniləyən funksiya
 function setStatus(text, color = "var(--muted)") {
   statusBox.textContent = text;
   statusBox.style.color = color;
 }
 
-// Nəticəni ekranda göstərən funksiya
 function showResult(title, badge, htmlContent) {
   resultBox.classList.remove("hidden");
   resultTitle.textContent = title;
@@ -23,55 +20,52 @@ function showResult(title, badge, htmlContent) {
   resultText.innerHTML = htmlContent;
 }
 
-// Nəticəni gizlədən funksiya
 function hideResult() {
   resultBox.classList.add("hidden");
 }
 
-// Mətnin içindən ilk linki tapan funksiya
 function extractFirstUrl(text) {
   const match = text.match(/https?:\/\/[^\s]+/i);
   return match ? match[0].trim() : "";
 }
 
-// "Paste" düyməsi (Panodan oxuma)
+// Panodan yapışdırma
 pasteBtn.addEventListener("click", async () => {
   try {
     const text = await navigator.clipboard.readText();
     if (!text) {
-      setStatus("Clipboard boşdur.", "#f87171"); // Qırmızı
+      setStatus("Clipboard boşdur.", "#f87171");
       return;
     }
-
     urlInput.value = text.trim();
     urlInput.focus();
-    setStatus("Link yapışdırıldı.", "#4ade80"); // Yaşıl
+    setStatus("Link daxil edildi.", "#4ade80");
   } catch {
-    setStatus("Clipboard oxunmadı. Zəhmət olmasa əllə yapışdırın.", "#f87171");
+    setStatus("Clipboard oxunmadı. Linki əllə yapışdırın.", "#f87171");
   }
 });
 
-// "Clear" düyməsi (Təmizləmə)
+// Clear (Təmizlə) düyməsi
 clearBtn.addEventListener("click", () => {
   urlInput.value = "";
-  setStatus("Təmizləndi.");
+  setStatus("Ready when you are.");
   hideResult();
   urlInput.focus();
 });
 
-// Input sahəsində dəyişiklik olduqda
+// Input dəyişəndə
 urlInput.addEventListener("input", () => {
   if (urlInput.value.trim()) {
-    setStatus("Link daxil edildi.");
+    setStatus("Link hazır.");
   } else {
     setStatus("Ready when you are.");
     hideResult();
   }
 });
 
-// Videonu fayl kimi cihazın yaddaşına yükləyən funksiya
+// Cihaza fayl yükləyən funksiya
 async function downloadFile(fileUrl, fileName) {
-  setStatus("Yükləmə başladı, zəhmət olmasa gözləyin...", "#60a5fa"); // Mavi
+  setStatus("Yükləmə başladı, gözləyin...", "#60a5fa");
   try {
     const res = await fetch(fileUrl);
     const blob = await res.blob();
@@ -80,102 +74,110 @@ async function downloadFile(fileUrl, fileName) {
     const a = document.createElement("a");
     a.style.display = "none";
     a.href = url;
-    a.download = fileName; // Faylın adı
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
-    
     setStatus("Yüklənmə tamamlandı!", "#4ade80");
   } catch (e) {
-    // Əgər brauzer kənar linkdən (CORS) yükləməyə icazə verməsə, yeni tabda açacaq
-    console.warn("Blob yükləməsi uğursuz oldu, yeni tabda açılır...", e);
     window.open(fileUrl, "_blank");
-    setStatus("Video yeni pəncərədə açıldı.", "#4ade80");
+    setStatus("Video yeni tabda açıldı.", "#4ade80");
   }
 }
 
-// "Download" düyməsinə klikləndikdə
+// Download düyməsinə kliklədikdə
 downloadBtn.addEventListener("click", async () => {
   const rawValue = urlInput.value.trim();
   const value = extractFirstUrl(rawValue);
 
-  // Link yoxlamaları
   if (!rawValue) {
-    setStatus("Əvvəlcə link yapışdır.", "#f87171");
+    setStatus("Zəhmət olmasa TikTok linkini daxil edin.", "#f87171");
     hideResult();
     return;
   }
 
-  if (!value) {
-    setStatus("Heç bir keçərli link tapılmadı.", "#f87171");
+  if (!value || !value.includes("tiktok.com")) {
+    setStatus("Xəta: Daxil edilən link TikTok-a aid deyil!", "#f87171");
     hideResult();
     return;
   }
 
-  if (!value.includes("tiktok.com")) {
-    setStatus("Xəta: Bu link TikTok-a aid deyil!", "#f87171");
-    hideResult();
-    return;
-  }
-
-  // Yükləmə animasiyası/statusu
   urlInput.value = value;
-  setStatus("Logosuz video hazırlanır, gözləyin...", "#60a5fa");
+  setStatus("Video məlumatları çəkilir...", "#60a5fa");
   downloadBtn.disabled = true;
   downloadBtn.style.opacity = "0.6";
   hideResult();
 
   try {
-    // TikWM API-yə müraciət (HD parametri ilə)
     const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(value)}&hd=1`);
     const res = await response.json();
 
     if (res.code === 0 && res.data) {
       const video = res.data;
-      const noWmUrl = video.hdplay || video.play; // Varsa HD, yoxsa normal no-watermark video
 
-      // Ekrana çıxarılacaq dizayn (HTML)
+      // İstifadəçinin özünün seçməsi üçün düymələr bloku
       const resultHTML = `
-        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
-          ${video.cover ? `<img src="${video.cover}" alt="Cover" style="width: 100%; max-height: 260px; object-fit: cover; border-radius: 14px; border: 1px solid var(--border);" />` : ""}
+        <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
+          ${video.cover ? `<img src="${video.cover}" alt="Cover" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 14px; border: 1px solid var(--border);" />` : ""}
           
-          <p style="font-size: 0.95rem; color: var(--text); line-height: 1.4; margin: 0;">
+          <p style="font-size: 0.95rem; color: var(--text); line-height: 1.4; margin: 0; font-weight: 600;">
             ${video.title || "TikTok Video"}
           </p>
 
-          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
-            <button id="saveVideoBtn" class="btn primary" style="margin-top: 0; width: 100%;">
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+            <!-- 1. Seçim: Normal Logosuz Video -->
+            <button id="normalDlBtn" class="btn primary" style="margin-top: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
               📥 Videonu Yüklə (No Watermark)
             </button>
 
+            <!-- 2. Seçim: HD Video (Əgər API tərəfindən dəstəklənirsə) -->
+            ${video.hdplay ? `
+              <button id="hdDlBtn" class="btn secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                🎥 HD Yüklə (No Watermark)
+              </button>
+            ` : ""}
+
+            <!-- 3. Seçim: MP3 Səs Faylı -->
             ${video.music ? `
-              <a href="${video.music}" target="_blank" download="SnapTok_audio.mp3" class="btn ghost" style="display: flex; align-items: center; justify-content: center; text-decoration: none;">
+              <button id="audioDlBtn" class="btn ghost" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
                 🎵 Audio Yüklə (MP3)
-              </a>
+              </button>
             ` : ""}
           </div>
         </div>
       `;
 
-      // Nəticəni ekranda göstəririk
-      showResult(`@${video.author?.unique_id || "User"}`, "No Watermark", resultHTML);
-      setStatus("Video hazırdır!", "#4ade80");
+      showResult(`@${video.author?.unique_id || "TikTok User"}`, "No Watermark", resultHTML);
+      setStatus("İstədiyiniz formatı seçib yükləyin:", "#4ade80");
 
-      // Yeni yaranmış "Videonu Yüklə" düyməsinə hadisə (event) əlavə edirik
-      document.getElementById("saveVideoBtn").addEventListener("click", () => {
-        downloadFile(noWmUrl, `SnapTok_${video.id || Math.floor(Math.random() * 10000)}.mp4`);
+      // 1. Normal Logosuz Yükləmə Düyməsi
+      document.getElementById("normalDlBtn").addEventListener("click", () => {
+        downloadFile(video.play, `SnapTok_${video.id || "video"}.mp4`);
       });
 
+      // 2. HD Yükləmə Düyməsi (varsa)
+      if (video.hdplay) {
+        document.getElementById("hdDlBtn").addEventListener("click", () => {
+          downloadFile(video.hdplay, `SnapTok_${video.id || "video"}_HD.mp4`);
+        });
+      }
+
+      // 3. Audio Yükləmə Düyməsi (varsa)
+      if (video.music) {
+        document.getElementById("audioDlBtn").addEventListener("click", () => {
+          downloadFile(video.music, `SnapTok_${video.id || "audio"}.mp3`);
+        });
+      }
+
     } else {
-      setStatus("Video tapılmadı. Ola bilsin video silinib və ya gizlidir.", "#f87171");
+      setStatus("Video tapılmadı və ya link gizlidir.", "#f87171");
     }
   } catch (err) {
     console.error(err);
-    setStatus("Sistemdə xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.", "#f87171");
+    setStatus("Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.", "#f87171");
   } finally {
-    // Düyməni yenidən aktiv edirik
     downloadBtn.disabled = false;
     downloadBtn.style.opacity = "1";
   }
