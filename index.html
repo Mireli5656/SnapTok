@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SnapTok - TikTok Video Downloader (No Watermark)</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SnapTok - TikTok Video Downloader</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -13,36 +12,38 @@
         <!-- Header -->
         <header class="header">
             <h1 class="logo">SnapTok</h1>
-            <p class="subtitle">Download TikTok videos without watermark instantly.</p>
+            <p class="subtitle">Download TikTok videos without watermark</p>
         </header>
 
-        <!-- Downloader Container -->
-        <div class="downloader-card">
-            <div class="input-wrapper">
+        <!-- Downloader Card -->
+        <div class="card">
+            <div class="input-group">
                 <input type="url" id="url" placeholder="Paste TikTok link here..." autocomplete="off">
-                <button id="pasteBtn" class="action-btn" title="Paste link">Paste</button>
-                <button id="clearBtn" class="action-btn clear-btn" title="Clear input">✕</button>
+                <div class="input-actions">
+                    <button id="pasteBtn" class="action-btn" title="Paste link">Paste</button>
+                    <button id="clearBtn" class="action-btn clear-btn" title="Clear">✕</button>
+                </div>
             </div>
 
             <button id="downloadBtn" class="btn primary-btn">Get Video</button>
 
-            <!-- Status Indicator -->
+            <!-- Status -->
             <p id="status" class="status-msg">Ready to download.</p>
 
-            <!-- Results Section -->
-            <div id="result" class="result-section hidden">
+            <!-- Results -->
+            <div id="result" class="result-box hidden">
                 <div class="result-header">
                     <span id="resultTitle" class="username">@user</span>
-                    <span id="resultBadge" class="badge">Success</span>
+                    <span class="badge">No Watermark</span>
                 </div>
                 
-                <div id="resultText"></div>
+                <div id="resultContent"></div>
             </div>
         </div>
-
+        
         <!-- Footer -->
         <footer class="footer">
-            <p>&copy; 2026 SnapTok. Fast & Free TikTok Downloader.</p>
+            <p>&copy; 2026 SnapTok — Fast & Secure</p>
         </footer>
     </main>
 
