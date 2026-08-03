@@ -1,178 +1,231 @@
-// SnapTok - TikTok Video Downloader Motoru
+// ==========================================
+// TikTok Downloader - GitHub Pages Edition
+// ==========================================
 
-const texts = {
-  tr: {
-    title: "SnapTok",
-    subtitle: "Hızlı, ücretsiz ve filigransız TikTok video indirici.",
-    placeholder: "TikTok video URL'sini buraya yapıştırın...",
-    button: "İndir",
-    loading: "Video işleniyor, lütfen bekleyin...",
-    invalidUrl: "Lütfen geçerli bir TikTok video bağlantısı girin!",
-    error: "Video verisi alınamadı. Bağlantıyı kontrol edip tekrar deneyin.",
-    noWatermark: "İndir (Filigransız - SD)",
-    hdWatermark: "İndir HD (Filigransız)",
-    downloadAudio: "Ses İndir (MP3)"
-  },
-  en: {
-    title: "SnapTok",
-    subtitle: "Simple, fast and free TikTok video downloader.",
-    placeholder: "Paste TikTok URL here...",
-    button: "Download",
-    loading: "Processing, please wait...",
-    invalidUrl: "Please enter a valid TikTok video URL!",
-    error: "Failed to fetch video. Please check the link and try again.",
-    noWatermark: "Download (No Watermark - SD)",
-    hdWatermark: "Download HD (No Watermark)",
-    downloadAudio: "Download MP3 Audio"
-  },
-  az: {
-    title: "SnapTok",
-    subtitle: "Sadə, sürətli və pulsuz TikTok video endirici.",
-    placeholder: "TikTok linkini yapışdır...",
-    button: "Yüklə",
-    loading: "Emal olunur, xahiş olunur gözləyin...",
-    invalidUrl: "Zəhmət olmasa düzgün TikTok video linki daxil edin!",
-    error: "Video tapılmadı. Linki yoxlayıb yenidən cəhd edin.",
-    noWatermark: "Su nişansız yüklə (SD)",
-    hdWatermark: "Su nişansız yüklə (HD)",
-    downloadAudio: "Audio yüklə (MP3)"
-  }
+const elements = {
+    urlInput: document.getElementById('videoUrl'),
+    downloadBtn: document.getElementById('downloadBtn'),
+    btnText: document.querySelector('.btn-text'),
+    btnLoader: document.querySelector('.btn-loader'),
+    resultSection: document.getElementById('resultSection'),
+    previewVideo: document.getElementById('previewVideo'),
+    videoInfo: document.getElementById('videoInfo'),
+    errorMessage: document.getElementById('errorMessage'),
+    apiOptions: document.getElementsByName('api')
 };
 
-// Tarayıcı Dil Tespiti
-const userLang = navigator.language.slice(0, 2);
-const lang = texts[userLang] ? userLang : "tr";
+let currentVideoData = null;
 
-// DOM Elemanları
-const titleEl = document.getElementById("title");
-const subtitleEl = document.getElementById("subtitle");
-const urlInput = document.getElementById("url");
-const downloadBtn = document.getElementById("downloadBtn");
-const boxContainer = document.querySelector(".box");
-
-// Başlangıç Metinlerini Atama
-if (titleEl) titleEl.textContent = texts[lang].title;
-if (subtitleEl) subtitleEl.textContent = texts[lang].subtitle;
-if (urlInput) urlInput.placeholder = texts[lang].placeholder;
-if (downloadBtn) downloadBtn.textContent = texts[lang].button;
-
-// Durum ve Sonuç Alanı
-let resultContainer = document.getElementById("resultContainer");
-if (!resultContainer) {
-  resultContainer = document.createElement("div");
-  resultContainer.id = "resultContainer";
-  boxContainer.appendChild(resultContainer);
+// URL yapıştırma
+async function pasteUrl() {
+    try {
+        const text = await navigator.clipboard.readText();
+        elements.urlInput.value = text;
+        elements.urlInput.focus();
+    } catch (err) {
+        showError('Clipboard erişimi reddedildi. Manuel yapıştırın.');
+    }
 }
 
-// TikTok URL Doğrulama (RegEx)
+// Seçili API'yi al
+function getSelectedApi() {
+    for (const radio of elements.apiOptions) {
+        if (radio.checked) return radio.value;
+    }
+    return 'tikwm';
+}
+
+// URL doğrulama
 function isValidTikTokUrl(url) {
-  const tiktokRegex = /(tiktok\.com|vm\.tiktok\.com|vt\.tiktok\.com)/i;
-  return tiktokRegex.test(url);
+    const patterns = [
+        /https?:\/\/(www\.)?tiktok\.com\/@[\w.]+\/video\/\d+/,
+        /https?:\/\/(www\.)?tiktok\.com\/t\/\w+/,
+        /https?:\/\/vm\.tiktok\.com\/\w+/,
+        /https?:\/\/(www\.)?tiktok\.com\/v\/\d+/,
+        /https?:\/\/(m\.)?tiktok\.com\/v\/\d+/
+    ];
+    return patterns.some(p => p.test(url));
 }
 
-// Event Listener Tanımlamaları
-downloadBtn.addEventListener("click", handleDownload);
-urlInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    handleDownload();
-  }
+// Buton durumunu ayarla
+function setLoading(loading) {
+    elements.downloadBtn.disabled = loading;
+    elements.btnText.classList.toggle('hidden', loading);
+    elements.btnLoader.classList.toggle('hidden', !loading);
+}
+
+// Hata göster
+function showError(msg) {
+    elements.errorMessage.textContent = msg;
+    elements.errorMessage.classList.remove('hidden');
+    setTimeout(() => elements.errorMessage.classList.add('hidden'), 8000);
+}
+
+// Sonuçları temizle
+function clearResults() {
+    elements.resultSection.classList.add('hidden');
+    elements.errorMessage.classList.add('hidden');
+    currentVideoData = null;
+}
+
+// ==========================================
+// API 1: TikWM (CORS-friendly, önerilen)
+// ==========================================
+async function fetchFromTikWM(url) {
+    const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}&hd=1`;
+    
+    const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json'
+        }
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    
+    const data = await response.json();
+    
+    if (!data.data) throw new Error('Video bulunamadı');
+    
+    return {
+        title: data.data.title || 'TikTok Video',
+        author: data.data.author?.nickname || 'Unknown',
+        duration: data.data.duration || 0,
+        hdUrl: data.data.hdplay || data.data.play,
+        sdUrl: data.data.play,
+        watermarkUrl: data.data.wmplay,
+        cover: data.data.cover,
+        api: 'tikwm'
+    };
+}
+
+// ==========================================
+// API 2: SnapTik.app (CORS proxy gerekli!)
+// ==========================================
+// NOT: GitHub Pages'den doğrudan çalışmaz.
+// Çözüm: Kendi Cloudflare Worker'ınızı kullanın.
+// Aşağıda örnek proxy URL'si var - kendi worker'ınızı kurmalısınız.
+async function fetchFromSnapTik(url) {
+    // ❗ KENDİ CLOUDFLARE WORKER'INIZI KURUN
+    // Aşağıdaki URL'yi kendi worker'ınızla değiştirin
+    const PROXY_URL = 'https://your-worker.your-subdomain.workers.dev';
+    
+    if (PROXY_URL.includes('your-worker')) {
+        throw new Error('SnapTik.app kullanmak için kendi CORS proxy\'nizi kurmalısınız. Daha fazla bilgi için README\'ye bakın.');
+    }
+    
+    const response = await fetch(`${PROXY_URL}/api/snaptik?url=${encodeURIComponent(url)}`);
+    
+    if (!response.ok) throw new Error('SnapTik API hatası');
+    
+    const data = await response.json();
+    
+    if (!data.video_url) throw new Error('Video URL alınamadı');
+    
+    return {
+        title: data.title || 'TikTok Video',
+        author: data.author || 'Unknown',
+        hdUrl: data.video_url,
+        sdUrl: data.video_url,
+        cover: data.thumbnail,
+        api: 'snaptik'
+    };
+}
+
+// ==========================================
+// Ana fetch fonksiyonu
+// ==========================================
+async function fetchVideo() {
+    const url = elements.urlInput.value.trim();
+    
+    if (!url) {
+        showError('Lütfen bir TikTok linki girin');
+        return;
+    }
+    
+    if (!isValidTikTokUrl(url)) {
+        showError('Geçersiz TikTok URL. Örnek: https://www.tiktok.com/@user/video/123456');
+        return;
+    }
+    
+    clearResults();
+    setLoading(true);
+    
+    try {
+        const api = getSelectedApi();
+        let videoData;
+        
+        if (api === 'tikwm') {
+            videoData = await fetchFromTikWM(url);
+        } else {
+            videoData = await fetchFromSnapTik(url);
+        }
+        
+        currentVideoData = videoData;
+        displayResult(videoData);
+        
+    } catch (error) {
+        console.error('Fetch error:', error);
+        showError(`Hata: ${error.message}`);
+    } finally {
+        setLoading(false);
+    }
+}
+
+// Sonuçları göster
+function displayResult(data) {
+    elements.previewVideo.src = data.hdUrl || data.sdUrl;
+    elements.previewVideo.poster = data.cover || '';
+    
+    elements.videoInfo.innerHTML = `
+        <h3>${escapeHtml(data.title)}</h3>
+        <p>@ ${escapeHtml(data.author)} ${data.duration ? `• ${data.duration}s` : ''}</p>
+    `;
+    
+    elements.resultSection.classList.remove('hidden');
+    elements.resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Video indir
+async function downloadVideo(quality) {
+    if (!currentVideoData) return;
+    
+    const url = quality === 'hd' ? currentVideoData.hdUrl : currentVideoData.watermarkUrl;
+    
+    if (!url) {
+        showError('İndirme linki bulunamadı');
+        return;
+    }
+    
+    try {
+        // Doğrudan indirme için anchor elementi kullan
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        a.download = `tiktok_${Date.now()}.mp4`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+    } catch (error) {
+        // Eğer indirme başarısız olursa yeni sekmede aç
+        window.open(url, '_blank');
+    }
+}
+
+// XSS koruması
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Enter tuşu desteği
+elements.urlInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') fetchVideo();
 });
 
-// Asenkron İndirme İşleyicisi
-async function handleDownload() {
-  const videoUrl = urlInput.value.trim();
-
-  if (!videoUrl || !isValidTikTokUrl(videoUrl)) {
-    showStatus(texts[lang].invalidUrl, "error");
-    return;
-  }
-
-  setLoading(true);
-  showStatus(texts[lang].loading, "info");
-
-  try {
-    // TikWM Açık API Uç Noktası (&hd=1 parametresi ile)
-    const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(videoUrl)}&hd=1`;
-    const response = await fetch(apiUrl);
-    const data = await response.json();
-
-    if (data && data.code === 0 && data.data) {
-      renderResult(data.data);
-    } else {
-      showStatus(texts[lang].error, "error");
-    }
-  } catch (err) {
-    console.error("API Bağlantı Hatası:", err);
-    showStatus(texts[lang].error, "error");
-  } finally {
-    setLoading(false);
-  }
-}
-
-// Arayüz Kilit Mekanizması
-function setLoading(isLoading) {
-  downloadBtn.disabled = isLoading;
-  urlInput.disabled = isLoading;
-  downloadBtn.style.opacity = isLoading ? "0.6" : "1";
-}
-
-// Bildirim Mesajı Gösterimi
-function showStatus(message, type) {
-  const color = type === "error" ? "#ef4444" : "#3b82f6";
-  resultContainer.innerHTML = `
-    <p style="color: ${color}; font-weight: 500; text-align: center; margin-top: 16px; font-size: 0.9rem;">
-      ${message}
-    </p>
-  `;
-}
-
-// Sonuç Kartı Oluşturma ve DOM Render İşlemi
-function renderResult(videoData) {
-  const { title, author, cover, play, hdplay, music } = videoData;
-  const authorName = author?.nickname || author?.unique_id || "";
-  const hdUrl = hdplay || play; // HD akış yoksa SD akışa ikame etme (Fallback)
-
-  resultContainer.innerHTML = `
-    <div class="result-card">
-      ${
-        cover
-          ? `<img src="${cover}" alt="Video Kapak Resmi" />`
-          : ""
-      }
-      ${
-        title
-          ? `<p class="video-title">${title}</p>`
-          : ""
-      }
-      ${
-        authorName
-          ? `<p class="author-name">@${authorName}</p>`
-          : ""
-      }
-      
-      <div class="download-buttons">
-        <a href="${play}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-          <button type="button" class="btn-sd">
-            📥 ${texts[lang].noWatermark}
-          </button>
-        </a>
-        
-        <a href="${hdUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-          <button type="button" class="btn-hd">
-            ✨ ${texts[lang].hdWatermark}
-          </button>
-        </a>
-
-        ${
-          music
-            ? `<a href="${music}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-                <button type="button" class="btn-mp3">
-                  🎵 ${texts[lang].downloadAudio}
-                </button>
-              </a>`
-            : ""
-        }
-      </div>
-    </div>
-  `;
-}
+// API değişince temizle
+elements.apiOptions.forEach(radio => {
+    radio.addEventListener('change', clearResults);
+});
