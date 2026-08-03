@@ -1,156 +1,229 @@
+/* SnapTok - Animasiyalı və Modern Stil Faylı */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
+/* Canlı, Hərəkətli Gradient Fon Animasiyası */
 body {
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #f8fafc;
-    padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(-45deg, #0f172a, #1e1b4b, #2e1065, #0284c7);
+  background-size: 400% 400%;
+  animation: animateBackground 12s ease infinite;
+  color: #f8fafc;
+  padding: 20px;
+  overflow-x: hidden;
 }
 
+@keyframes animateBackground {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Əsas Konteyner (Glassmorphic Box) */
 .main-wrapper {
-    width: 100%;
-    max-width: 480px;
+  width: 100%;
+  max-width: 500px;
+  perspective: 1000px;
 }
 
 .box {
-    background: rgba(30, 41, 59, 0.7);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    padding: 32px 24px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    text-align: center;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  padding: 40px 28px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-align: center;
+  animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Kartın Səhifəyə Yüklənmə Animasiyası */
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Başlıq və Neon Parıltı Effekti */
 h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    background: linear-gradient(to right, #38bdf8, #818cf8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 8px;
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+  animation: pulseTitle 3s ease-in-out infinite alternate;
+}
+
+@keyframes pulseTitle {
+  0% { filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.2)); }
+  100% { filter: drop-shadow(0 0 22px rgba(192, 132, 252, 0.6)); }
 }
 
 p#subtitle {
-    font-size: 0.9rem;
-    color: #94a3b8;
-    margin-bottom: 24px;
+  font-size: 0.95rem;
+  color: #94a3b8;
+  margin-bottom: 28px;
+  line-height: 1.5;
 }
 
+/* Input və Düymə Qrupu */
 .input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 input#url {
-    width: 100%;
-    padding: 14px 16px;
-    border-radius: 12px;
-    border: 1px solid #334155;
-    background: #0f172a;
-    color: #f8fafc;
-    font-size: 0.95rem;
-    outline: none;
-    transition: all 0.3s ease;
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(2, 6, 23, 0.6);
+  color: #ffffff;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 input#url:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  border-color: #38bdf8;
+  background: rgba(2, 6, 23, 0.85);
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.25),
+              0 10px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
 }
 
-button {
-    width: 100%;
-    padding: 14px 16px;
-    border-radius: 12px;
-    border: none;
-    background: #4f46e5;
-    color: #ffffff;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.1s ease;
+/* İşıqlı İndir Düyməsi */
+button#downloadBtn {
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%);
+  background-size: 200% auto;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-button:hover {
-    background: #4338ca;
+button#downloadBtn:hover {
+  background-position: right center;
+  box-shadow: 0 15px 30px rgba(124, 58, 237, 0.6);
+  transform: translateY(-3px);
 }
 
-button:active {
-    transform: scale(0.98);
+button#downloadBtn:active {
+  transform: translateY(1px);
+  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
 }
 
-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
+/* Nəticə Kartı Animasiyası */
+#resultContainer {
+  margin-top: 24px;
 }
 
 .result-card {
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(148, 163, 184, 0.2);
-    text-align: left;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  animation: resultSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes resultSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .result-card img {
-    width: 100%;
-    max-height: 220px;
-    border-radius: 12px;
-    object-fit: cover;
-    margin-bottom: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  width: 100%;
+  max-height: 240px;
+  border-radius: 16px;
+  object-fit: cover;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease;
 }
 
-.video-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #e2e8f0;
-    line-height: 1.4;
-    margin-bottom: 4px;
+.result-card img:hover {
+  transform: scale(1.02);
 }
 
-.author-name {
-    font-size: 0.8rem;
-    color: #94a3b8;
-    margin-bottom: 16px;
-}
-
+/* İndirmə Seçim Düymələri */
 .download-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.download-buttons button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
 .btn-sd {
-    background: #2563eb;
-}
-
-.btn-sd:hover {
-    background: #1d4ed8;
+  background: #2563eb !important;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
 }
 
 .btn-hd {
-    background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
-}
-
-.btn-hd:hover {
-    opacity: 0.9;
+  background: linear-gradient(135deg, #9333ea, #db2777) !important;
+  box-shadow: 0 6px 16px rgba(219, 39, 119, 0.3);
 }
 
 .btn-mp3 {
-    background: #10b981;
+  background: #059669 !important;
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.3);
 }
 
-.btn-mp3:hover {
-    background: #059669;
+.download-buttons button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+/* Mobil Cihazlara Uyğunlaşma */
+@media (max-width: 480px) {
+  .box {
+    padding: 28px 18px;
+    border-radius: 22px;
+  }
+  h1 {
+    font-size: 2.2rem;
+  }
 }
