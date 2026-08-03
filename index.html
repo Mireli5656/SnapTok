@@ -3,32 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SnapTok - TikTok Video Downloader</title>
-  <!-- CSS faylını bura bağlayırıq -->
-  <link rel="stylesheet" href="style.css" />
+  <title>SnapTok</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #0f172a; color: white; }
+    .box { max-width: 500px; margin: 60px auto; padding: 24px; background: #111827; border-radius: 16px; }
+    input, button { width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; border: 0; }
+    input { background: #0b1220; color: white; }
+    button { background: #2563eb; color: white; font-weight: 700; }
+  </style>
 </head>
 <body>
   <div class="box">
     <h1 id="title">SnapTok</h1>
     <p id="subtitle">Simple, fast and free TikTok video downloader.</p>
-    
-    <input id="url" type="text" placeholder="Paste TikTok URL here..." autocomplete="off" />
-    <p id="errorMsg" class="error-text"></p>
-    
-    <button id="downloadBtn">Get Video</button>
-
-    <!-- Yükləmə Nəticələri -->
-    <div id="resultBox">
-      <div class="video-info">
-        <img id="videoThumb" src="" alt="Thumbnail">
-        <p id="videoTitle"></p>
-      </div>
-      <a id="btnNoWatermark" href="#" target="_blank" class="download-btn">Download (No Watermark)</a>
-      <a id="btnHD" href="#" target="_blank" class="download-btn hd">Download HD</a>
-    </div>
+    <input id="url" placeholder="Paste TikTok URL here..." />
+    <button id="downloadBtn">Download</button>
   </div>
 
-  <!-- JS faylını bura bağlayırıq -->
-  <script src="script.js"></script>
+  <script>
+    const texts = {
+      en: {
+        title: "SnapTok",
+        subtitle: "Simple, fast and free TikTok video downloader.",
+        placeholder: "Paste TikTok URL here...",
+        button: "Download"
+      },
+      az: {
+        title: "SnapTok",
+        subtitle: "Sadə, sürətli və pulsuz TikTok video endirici.",
+        placeholder: "TikTok linkini yapışdır...",
+        button: "Yüklə"
+      }
+    };
+
+    const lang = navigator.language.startsWith("en") ? "en" : "az";
+
+    document.documentElement.lang = lang;
+    document.getElementById("title").textContent = texts[lang].title;
+    document.getElementById("subtitle").textContent = texts[lang].subtitle;
+    document.getElementById("url").placeholder = texts[lang].placeholder;
+    document.getElementById("downloadBtn").textContent = texts[lang].button;
+  </script>
 </body>
 </html>
