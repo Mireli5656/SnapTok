@@ -1,184 +1,83 @@
+// İngilis dili mətnləri
+const texts = {
+  emptyError: "Please enter a valid TikTok link!",
+  processing: "Processing...",
+  fetchError: "Couldn't fetch the video. Check the link or try again.",
+  buttonText: "Get Video"
+};
+
+// DOM Elementləri
 const urlInput = document.getElementById("url");
-const pasteBtn = document.getElementById("pasteBtn");
-const clearBtn = document.getElementById("clearBtn");
 const downloadBtn = document.getElementById("downloadBtn");
-const statusBox = document.getElementById("status");
-const resultBox = document.getElementById("result");
-const resultTitle = document.getElementById("resultTitle");
-const resultBadge = document.getElementById("resultBadge");
-const resultText = document.getElementById("resultText");
+const errorMsg = document.getElementById("errorMsg");
+const resultBox = document.getElementById("resultBox");
+const videoThumb = document.getElementById("videoThumb");
+const videoTitle = document.getElementById("videoTitle");
+const btnNoWatermark = document.getElementById("btnNoWatermark");
+const btnHD = document.getElementById("btnHD");
 
-function setStatus(text, color = "var(--muted)") {
-  statusBox.textContent = text;
-  statusBox.style.color = color;
+// URL Ayırd edici funksiya (Kopyalanan mətnin içindən yalnız linki tapır)
+function extractTikTokUrl(text) {
+  const urlRegex = /(https?:\/\/[^\s]+tiktok\.com[^\s]+)/i;
+  const match = text.match(urlRegex);
+  return match ? match[0] : null;
 }
 
-function showResult(title, badge, htmlContent) {
-  resultBox.classList.remove("hidden");
-  resultTitle.textContent = title;
-  resultBadge.textContent = badge;
-  resultText.innerHTML = htmlContent;
-}
-
-function hideResult() {
-  resultBox.classList.add("hidden");
-}
-
-function extractFirstUrl(text) {
-  const match = text.match(/https?:\/\/[^\s]+/i);
-  return match ? match[0].trim() : "";
-}
-
-// Panodan yapışdırma
-pasteBtn.addEventListener("click", async () => {
-  try {
-    const text = await navigator.clipboard.readText();
-    if (!text) {
-      setStatus("Clipboard boşdur.", "#f87171");
-      return;
-    }
-    urlInput.value = text.trim();
-    urlInput.focus();
-    setStatus("Link daxil edildi.", "#4ade80");
-  } catch {
-    setStatus("Clipboard oxunmadı. Linki əllə yapışdırın.", "#f87171");
-  }
-});
-
-// Clear (Təmizlə) düyməsi
-clearBtn.addEventListener("click", () => {
-  urlInput.value = "";
-  setStatus("Ready when you are.");
-  hideResult();
-  urlInput.focus();
-});
-
-// Input dəyişəndə
-urlInput.addEventListener("input", () => {
-  if (urlInput.value.trim()) {
-    setStatus("Link hazır.");
-  } else {
-    setStatus("Ready when you are.");
-    hideResult();
-  }
-});
-
-// Cihaza fayl yükləyən funksiya
-async function downloadFile(fileUrl, fileName) {
-  setStatus("Yükləmə başladı, gözləyin...", "#60a5fa");
-  try {
-    const res = await fetch(fileUrl);
-    const blob = await res.blob();
-    const url = window.URL.createObjectURL(blob);
-    
-    const a = document.createElement("a");
-    a.style.display = "none";
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-    setStatus("Yüklənmə tamamlandı!", "#4ade80");
-  } catch (e) {
-    window.open(fileUrl, "_blank");
-    setStatus("Video yeni tabda açıldı.", "#4ade80");
-  }
-}
-
-// Download düyməsinə kliklədikdə
+// Düyməyə basıldıqda işləyəcək funksiya
 downloadBtn.addEventListener("click", async () => {
-  const rawValue = urlInput.value.trim();
-  const value = extractFirstUrl(rawValue);
+  // Əvvəlki nəticələri gizlədirik
+  errorMsg.style.display = "none";
+  resultBox.style.display = "none";
 
-  if (!rawValue) {
-    setStatus("Zəhmət olmasa TikTok linkini daxil edin.", "#f87171");
-    hideResult();
+  const rawText = urlInput.value.trim();
+  const tiktokUrl = extractTikTokUrl(rawText);
+
+  if (!tiktokUrl) {
+    errorMsg.textContent = texts.emptyError;
+    errorMsg.style.display = "block";
     return;
   }
 
-  if (!value || !value.includes("tiktok.com")) {
-    setStatus("Xəta: Daxil edilən link TikTok-a aid deyil!", "#f87171");
-    hideResult();
-    return;
-  }
-
-  urlInput.value = value;
-  setStatus("Video məlumatları çəkilir...", "#60a5fa");
+  // Düyməni "Yüklənir" vəziyyətinə salırıq
+  downloadBtn.textContent = texts.processing;
   downloadBtn.disabled = true;
-  downloadBtn.style.opacity = "0.6";
-  hideResult();
 
   try {
-    const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(value)}&hd=1`);
-    const res = await response.json();
+    // TikWM API-yə sorğu göndəririk (Pulsuz və qeydiyyatsız)
+    const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(tiktokUrl)}&hd=1`;
+    const response = await fetch(apiUrl);
+    const data = await response.json();
 
-    if (res.code === 0 && res.data) {
-      const video = res.data;
-
-      // İstifadəçinin özünün seçməsi üçün düymələr bloku
-      const resultHTML = `
-        <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
-          ${video.cover ? `<img src="${video.cover}" alt="Cover" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 14px; border: 1px solid var(--border);" />` : ""}
-          
-          <p style="font-size: 0.95rem; color: var(--text); line-height: 1.4; margin: 0; font-weight: 600;">
-            ${video.title || "TikTok Video"}
-          </p>
-
-          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
-            <!-- 1. Seçim: Normal Logosuz Video -->
-            <button id="normalDlBtn" class="btn primary" style="margin-top: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
-              📥 Videonu Yüklə (No Watermark)
-            </button>
-
-            <!-- 2. Seçim: HD Video (Əgər API tərəfindən dəstəklənirsə) -->
-            ${video.hdplay ? `
-              <button id="hdDlBtn" class="btn secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                🎥 HD Yüklə (No Watermark)
-              </button>
-            ` : ""}
-
-            <!-- 3. Seçim: MP3 Səs Faylı -->
-            ${video.music ? `
-              <button id="audioDlBtn" class="btn ghost" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                🎵 Audio Yüklə (MP3)
-              </button>
-            ` : ""}
-          </div>
-        </div>
-      `;
-
-      showResult(`@${video.author?.unique_id || "TikTok User"}`, "No Watermark", resultHTML);
-      setStatus("İstədiyiniz formatı seçib yükləyin:", "#4ade80");
-
-      // 1. Normal Logosuz Yükləmə Düyməsi
-      document.getElementById("normalDlBtn").addEventListener("click", () => {
-        downloadFile(video.play, `SnapTok_${video.id || "video"}.mp4`);
-      });
-
-      // 2. HD Yükləmə Düyməsi (varsa)
-      if (video.hdplay) {
-        document.getElementById("hdDlBtn").addEventListener("click", () => {
-          downloadFile(video.hdplay, `SnapTok_${video.id || "video"}_HD.mp4`);
-        });
+    if (data.code === 0) {
+      // Videonun şəklini və başlığını təyin edirik
+      videoThumb.src = data.data.cover;
+      videoTitle.textContent = data.data.title || "TikTok Video";
+      
+      // No Watermark linkini əlavə edirik
+      btnNoWatermark.href = data.data.play; 
+      
+      // Əgər HD formatı varsa, göstəririk
+      if (data.data.hdplay) {
+        btnHD.href = data.data.hdplay;
+        btnHD.style.display = "flex";
+      } else {
+        btnHD.style.display = "none";
       }
 
-      // 3. Audio Yükləmə Düyməsi (varsa)
-      if (video.music) {
-        document.getElementById("audioDlBtn").addEventListener("click", () => {
-          downloadFile(video.music, `SnapTok_${video.id || "audio"}.mp3`);
-        });
-      }
-
+      // Nəticələr qutusunu ekranda göstəririk
+      resultBox.style.display = "block";
     } else {
-      setStatus("Video tapılmadı və ya link gizlidir.", "#f87171");
+      // API xətası (silinmiş video və s.)
+      errorMsg.textContent = data.msg || texts.fetchError;
+      errorMsg.style.display = "block";
     }
-  } catch (err) {
-    console.error(err);
-    setStatus("Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.", "#f87171");
+  } catch (error) {
+    // İnternet və ya server problemi olanda
+    errorMsg.textContent = texts.fetchError;
+    errorMsg.style.display = "block";
   } finally {
+    // Prosess bitəndə düyməni köhnə vəziyyətinə qaytarırıq
+    downloadBtn.textContent = texts.buttonText;
     downloadBtn.disabled = false;
-    downloadBtn.style.opacity = "1";
   }
 });
