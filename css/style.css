@@ -43,8 +43,14 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 h1 {
@@ -59,7 +65,8 @@ p {
   line-height: 1.5;
 }
 
-input, button {
+input,
+button {
   width: 100%;
   border: 0;
   border-radius: 14px;
@@ -94,74 +101,12 @@ button {
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
-button:active { transform: translateY(1px); }
-button:hover { opacity: 0.96; }
-button:disabled {
-  background: #475569;
-  cursor: not-allowed;
-  opacity: 0.7;
+button:active {
+  transform: translateY(1px);
 }
 
-/* Result Section Styles */
-#resultBox {
-  display: none;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
-  animation: fadeIn 0.3s ease-out;
-}
-
-.video-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.video-info img {
-  width: 60px;
-  height: 60px;
-  border-radius: 10px;
-  object-fit: cover;
-}
-
-.video-info p {
-  margin: 0;
-  color: var(--text);
-  font-size: 0.9rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.download-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 52px;
-  text-decoration: none;
-  color: white;
-  font-weight: 700;
-  border-radius: 14px;
-  background: #10b981; /* Yaşıl rəng (No Watermark) */
-  margin-top: 10px;
-  transition: opacity 0.15s ease, transform 0.15s ease;
-}
-
-.download-btn.hd {
-  background: #8b5cf6; /* Bənövşəyi rəng (HD) */
-}
-
-.download-btn:hover { opacity: 0.9; }
-.download-btn:active { transform: translateY(1px); }
-
-.error-text {
-  color: #ef4444;
-  font-size: 0.9rem;
-  margin-top: 10px;
-  display: none;
+button:hover {
+  opacity: 0.96;
 }
 
 @media (max-width: 640px) {
@@ -171,4 +116,4 @@ button:disabled {
     padding: 18px;
     border-radius: 18px;
   }
-}
+    }
