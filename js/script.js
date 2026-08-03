@@ -5,7 +5,7 @@ const downloadBtn = document.getElementById("downloadBtn");
 const statusBox = document.getElementById("status");
 const resultBox = document.getElementById("result");
 const resultTitle = document.getElementById("resultTitle");
-const resultText = document.getElementById("resultText");
+const resultContent = document.getElementById("resultContent");
 
 function setStatus(text, color = "var(--text-muted)") {
   statusBox.textContent = text;
@@ -28,7 +28,7 @@ pasteBtn.addEventListener("click", async () => {
     urlInput.value = text.trim();
     setStatus("Link pasted successfully.", "#10b981");
   } catch {
-    setStatus("Could not paste. Try doing it manually.", "#ef4444");
+    setStatus("Could not paste automatically. Long press to paste.", "#ef4444");
   }
 });
 
@@ -37,6 +37,7 @@ clearBtn.addEventListener("click", () => {
   urlInput.value = "";
   setStatus("Ready to download.", "var(--text-muted)");
   resultBox.classList.add("hidden");
+  urlInput.focus();
 });
 
 // Download File Logic
@@ -89,23 +90,23 @@ downloadBtn.addEventListener("click", async () => {
 
       const resultHTML = `
         <div class="download-options">
-          ${video.cover ? `<img src="${video.cover}" alt="Cover" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;" />` : ""}
-          <p style="font-size: 0.9rem; margin-bottom: 10px; color: var(--text-main); font-weight: 500;">${video.title || "TikTok Video"}</p>
+          ${video.cover ? `<img src="${video.cover}" alt="Cover" style="width: 100%; max-height: 220px; object-fit: cover; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border);" />` : ""}
+          <p class="video-title">${video.title || "TikTok Video"}</p>
           
-          <button id="normalDlBtn" class="btn primary-btn">Download Video (No Watermark)</button>
+          <button id="normalDlBtn" class="btn primary-btn">📥 Download Video (No Watermark)</button>
           
-          ${video.hdplay ? `<button id="hdDlBtn" class="btn secondary-btn">Download HD Video</button>` : ""}
+          ${video.hdplay ? `<button id="hdDlBtn" class="btn secondary-btn">🎥 Download HD Video</button>` : ""}
           
-          ${video.music ? `<button id="audioDlBtn" class="btn ghost-btn">Download Audio (MP3)</button>` : ""}
+          ${video.music ? `<button id="audioDlBtn" class="btn ghost-btn">🎵 Download Audio (MP3)</button>` : ""}
         </div>
       `;
 
       resultTitle.textContent = `@${video.author?.unique_id || "tiktok_user"}`;
-      resultText.innerHTML = resultHTML;
+      resultContent.innerHTML = resultHTML;
       resultBox.classList.remove("hidden");
       setStatus("Choose format to download:", "#10b981");
 
-      // Attach events to new buttons
+      // Attach events
       document.getElementById("normalDlBtn").addEventListener("click", () => {
         downloadFile(video.play, `SnapTok_${video.id}.mp4`);
       });
