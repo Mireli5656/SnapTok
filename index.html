@@ -1,67 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SnapTok - No Watermark TikTok Downloader</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SnapTok</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #0f172a; color: white; }
+    .box { max-width: 500px; margin: 60px auto; padding: 24px; background: #111827; border-radius: 16px; }
+    input, button { width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; border: 0; }
+    input { background: #0b1220; color: white; }
+    button { background: #2563eb; color: white; font-weight: 700; }
+  </style>
 </head>
 <body>
+  <div class="box">
+    <h1 id="title">SnapTok</h1>
+    <p id="subtitle">Simple, fast and free TikTok video downloader.</p>
+    <input id="url" placeholder="Paste TikTok URL here..." />
+    <button id="downloadBtn">Download</button>
+  </div>
 
-    <!-- Background Animated Shapes -->
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
+  <script>
+    const texts = {
+      en: {
+        title: "SnapTok",
+        subtitle: "Simple, fast and free TikTok video downloader.",
+        placeholder: "Paste TikTok URL here...",
+        button: "Download"
+      },
+      az: {
+        title: "SnapTok",
+        subtitle: "Sadə, sürətli və pulsuz TikTok video endirici.",
+        placeholder: "TikTok linkini yapışdır...",
+        button: "Yüklə"
+      }
+    };
 
-    <main class="container fade-in-up">
-        <!-- Header -->
-        <header class="header">
-            <h1 class="logo">SnapTok</h1>
-            <p class="subtitle">Download TikTok videos in HD without watermark</p>
-        </header>
+    const lang = navigator.language.startsWith("en") ? "en" : "az";
 
-        <!-- Main Card -->
-        <div class="glass-card">
-            <div class="input-group">
-                <input type="url" id="url" placeholder="Paste video link here..." autocomplete="off">
-                <div class="input-actions">
-                    <button id="pasteBtn" class="action-btn" title="Paste link">Paste</button>
-                    <button id="clearBtn" class="action-btn clear-btn hidden" title="Clear">✕</button>
-                </div>
-            </div>
-
-            <button id="downloadBtn" class="btn primary-btn pulse-anim">
-                <span>Download Now</span>
-            </button>
-
-            <!-- Loading Spinner (Hidden by default) -->
-            <div id="loader" class="loader-container hidden">
-                <div class="spinner"></div>
-                <p>Processing video...</p>
-            </div>
-
-            <!-- Status Indicator -->
-            <p id="status" class="status-msg">Ready when you are.</p>
-
-            <!-- Results Box (Hidden by default) -->
-            <div id="result" class="result-box hidden">
-                <div class="result-header">
-                    <div class="user-info">
-                        <span class="avatar-placeholder">@</span>
-                        <span id="resultTitle" class="username">user</span>
-                    </div>
-                    <span class="badge">Success</span>
-                </div>
-                
-                <div id="resultContent" class="stagger-in"></div>
-            </div>
-        </div>
-        
-        <!-- Footer -->
-        <footer class="footer">
-            <p>&copy; 2026 SnapTok — Super Fast & Free</p>
-        </footer>
-    </main>
-
-    <script src="js/script.js"></script>
+    document.documentElement.lang = lang;
+    document.getElementById("title").textContent = texts[lang].title;
+    document.getElementById("subtitle").textContent = texts[lang].subtitle;
+    document.getElementById("url").placeholder = texts[lang].placeholder;
+    document.getElementById("downloadBtn").textContent = texts[lang].button;
+  </script>
 </body>
-</html>
+    </html>
