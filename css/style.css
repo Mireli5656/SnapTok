@@ -1,229 +1,508 @@
-/* SnapTok - Animasiyalı və Modern Stil Faylı */
-
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+:root {
+    --primary: #ff0050;
+    --primary-dark: #e60047;
+    --secondary: #00f2ea;
+    --bg-dark: #0a0a0f;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-highlight: rgba(255, 255, 255, 0.05);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --radius: 24px;
+}
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* Canlı, Hərəkətli Gradient Fon Animasiyası */
 body {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(-45deg, #0f172a, #1e1b4b, #2e1065, #0284c7);
-  background-size: 400% 400%;
-  animation: animateBackground 12s ease infinite;
-  color: #f8fafc;
-  padding: 20px;
-  overflow-x: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
 }
 
-@keyframes animateBackground {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* Animated Background */
+.bg-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
 }
 
-/* Əsas Konteyner (Glassmorphic Box) */
-.main-wrapper {
-  width: 100%;
-  max-width: 500px;
-  perspective: 1000px;
+.gradient-sphere {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: float 20s infinite ease-in-out;
 }
 
-.box {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 28px;
-  padding: 40px 28px;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5),
-              inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  text-align: center;
-  animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.sphere-1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--primary), transparent 70%);
+    top: -10%;
+    left: -10%;
+    animation-delay: 0s;
 }
 
-/* Kartın Səhifəyə Yüklənmə Animasiyası */
-@keyframes cardEntrance {
-  from {
-    opacity: 0;
-    transform: translateY(40px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.sphere-2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--secondary), transparent 70%);
+    bottom: -15%;
+    right: -10%;
+    animation-delay: -7s;
 }
 
-/* Başlıq və Neon Parıltı Effekti */
-h1 {
-  font-size: 2.8rem;
-  font-weight: 800;
-  letter-spacing: -1px;
-  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 10px;
-  animation: pulseTitle 3s ease-in-out infinite alternate;
+.sphere-3 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, #bd00ff, transparent 70%);
+    top: 40%;
+    left: 50%;
+    animation-delay: -14s;
 }
 
-@keyframes pulseTitle {
-  0% { filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.2)); }
-  100% { filter: drop-shadow(0 0 22px rgba(192, 132, 252, 0.6)); }
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
 }
 
-p#subtitle {
-  font-size: 0.95rem;
-  color: #94a3b8;
-  margin-bottom: 28px;
-  line-height: 1.5;
+.container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-/* Input və Düymə Qrupu */
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+/* Glassmorphism Card */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 48px;
+    box-shadow: var(--shadow), inset 0 1px 0 var(--glass-highlight);
+    position: relative;
+    overflow: hidden;
 }
 
-input#url {
-  width: 100%;
-  padding: 16px 20px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(2, 6, 23, 0.6);
-  color: #ffffff;
-  font-size: 1rem;
-  outline: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
 }
 
-input#url:focus {
-  border-color: #38bdf8;
-  background: rgba(2, 6, 23, 0.85);
-  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.25),
-              0 10px 20px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px);
+.header {
+    text-align: center;
+    margin-bottom: 40px;
 }
 
-/* İşıqlı İndir Düyməsi */
-button#downloadBtn {
-  width: 100%;
-  padding: 16px 20px;
-  border-radius: 16px;
-  border: none;
-  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%);
-  background-size: 200% auto;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 1.05rem;
-  cursor: pointer;
-  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
-  transition: all 0.4s ease;
-  position: relative;
-  overflow: hidden;
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 8px;
 }
 
-button#downloadBtn:hover {
-  background-position: right center;
-  box-shadow: 0 15px 30px rgba(124, 58, 237, 0.6);
-  transform: translateY(-3px);
+.logo svg {
+    color: var(--primary);
 }
 
-button#downloadBtn:active {
-  transform: translateY(1px);
-  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+.logo h1 {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-/* Nəticə Kartı Animasiyası */
-#resultContainer {
-  margin-top: 24px;
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 15px;
+    font-weight: 400;
 }
 
-.result-card {
-  padding-top: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  animation: resultSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Input Section */
+.input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
 }
 
-@keyframes resultSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 16px;
+    color: var(--text-secondary);
+    z-index: 2;
+}
+
+#videoUrl {
+    width: 100%;
+    padding: 16px 48px 16px 48px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+#videoUrl:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255, 0, 80, 0.1);
+    background: rgba(0, 0, 0, 0.5);
+}
+
+#videoUrl::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.paste-btn {
+    position: absolute;
+    right: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.paste-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.download-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 0, 80, 0.3);
+}
+
+.download-btn:active {
     transform: translateY(0);
-  }
 }
 
-.result-card img {
-  width: 100%;
-  max-height: 240px;
-  border-radius: 16px;
-  object-fit: cover;
-  margin-bottom: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  transition: transform 0.3s ease;
+.download-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
-.result-card img:hover {
-  transform: scale(1.02);
+.btn-loader {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
 }
 
-/* İndirmə Seçim Düymələri */
-.download-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 16px;
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
-.download-buttons button {
-  width: 100%;
-  padding: 14px;
-  border-radius: 14px;
-  border: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: white;
-  cursor: pointer;
-  transition: all 0.25s ease;
+/* API Selector */
+.api-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
 }
 
-.btn-sd {
-  background: #2563eb !important;
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+.api-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
 }
 
-.btn-hd {
-  background: linear-gradient(135deg, #9333ea, #db2777) !important;
-  box-shadow: 0 6px 16px rgba(219, 39, 119, 0.3);
+.api-option:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
-.btn-mp3 {
-  background: #059669 !important;
-  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.3);
+.api-option input {
+    position: absolute;
+    opacity: 0;
 }
 
-.download-buttons button:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
+.api-check {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--text-secondary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
 }
 
-/* Mobil Cihazlara Uyğunlaşma */
-@media (max-width: 480px) {
-  .box {
-    padding: 28px 18px;
-    border-radius: 22px;
-  }
-  h1 {
-    font-size: 2.2rem;
-  }
+.api-check::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: var(--primary);
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.2s;
+}
+
+.api-option input:checked + .api-check {
+    border-color: var(--primary);
+}
+
+.api-option input:checked + .api-check::after {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.api-option input:checked ~ .api-label strong {
+    color: var(--primary);
+}
+
+.api-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.api-label strong {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color 0.2s;
+}
+
+.api-label small {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Result Section */
+.result-section {
+    animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.video-preview {
+    margin-bottom: 20px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--glass-border);
+}
+
+#previewVideo {
+    width: 100%;
+    display: block;
+    max-height: 500px;
+    object-fit: contain;
+    background: #000;
+}
+
+.video-info {
+    padding: 16px 20px;
+    border-top: 1px solid var(--glass-border);
+}
+
+.video-info h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text-primary);
+}
+
+.video-info p {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.download-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.option-btn {
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.option-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.hd-btn {
+    background: linear-gradient(135deg, rgba(255, 0, 80, 0.2), rgba(255, 0, 80, 0.1));
+    border-color: rgba(255, 0, 80, 0.3);
+}
+
+.hd-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 0, 80, 0.3), rgba(255, 0, 80, 0.2));
+    box-shadow: 0 4px 15px rgba(255, 0, 80, 0.2);
+}
+
+.watermark-btn {
+    opacity: 0.7;
+}
+
+/* Error Message */
+.error-message {
+    padding: 16px 20px;
+    background: rgba(255, 0, 80, 0.1);
+    border: 1px solid rgba(255, 0, 80, 0.2);
+    border-radius: 16px;
+    color: #ff6b8a;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 20px;
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+/* Features */
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid var(--glass-border);
+}
+
+.feature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.feature-icon {
+    font-size: 24px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 32px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.cors-notice {
+    opacity: 0.6;
+    font-size: 12px;
+}
+
+/* Utilities */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .glass-card {
+        padding: 32px 24px;
+    }
+    
+    .api-selector,
+    .download-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .features {
+        gap: 20px;
+    }
+    
+    .logo h1 {
+        font-size: 22px;
+    }
 }
