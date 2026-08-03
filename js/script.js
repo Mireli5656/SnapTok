@@ -1,4 +1,4 @@
-// SnapTok - SnapTik tipli Çoxlu API Dəstəkli Skript
+// SnapTok - SnapTik tipli Təkmilləşdirilmiş Skript
 
 const texts = {
   en: {
@@ -6,11 +6,11 @@ const texts = {
     subtitle: "Simple, fast and free TikTok video downloader.",
     placeholder: "Paste TikTok URL here...",
     button: "Download",
-    loading: "Processing via SnapTik API, please wait...",
+    loading: "Fetching video from SnapTik servers...",
     invalidUrl: "Please enter a valid TikTok video URL!",
-    error: "Failed to fetch video from all servers. Please try again.",
-    noWatermark: "Download (No Watermark - SD)",
-    hdWatermark: "Download HD (No Watermark)",
+    error: "Connection error or CORS block. If you are opening the file locally (file://), please use a local server (like VS Code Live Server).",
+    noWatermark: "No Watermark (SD)",
+    hdWatermark: "No Watermark (HD)",
     downloadAudio: "Download MP3 Audio"
   },
   az: {
@@ -18,11 +18,11 @@ const texts = {
     subtitle: "Sadə, sürətli və pulsuz TikTok video endirici.",
     placeholder: "TikTok linkini yapışdır...",
     button: "Yüklə",
-    loading: "SnapTik API ilə emal olunur, xahiş olunur gözləyin...",
+    loading: "SnapTik serverlərindən video əldə edilir...",
     invalidUrl: "Zəhmət olmasa düzgün TikTok video linki daxil edin!",
-    error: "Video heç bir serverdən tapılmadı. Zəhmət olmasa yenidən cəhd edin.",
-    noWatermark: "Su nişansız yüklə (SD)",
-    hdWatermark: "Su nişansız yüklə (HD)",
+    error: "Şəbəkə xətası və ya CORS bloklaması. Faylı birbaşa kompyuterdən (file://) açırsınızsa, brauzer sorğunu bloklayır. Zəhmət olmasa 'Live Server' (VS Code) istifadə edin.",
+    noWatermark: "No Watermark (SD)",
+    hdWatermark: "No Watermark (HD)",
     downloadAudio: "Audio yüklə (MP3)"
   }
 };
@@ -30,7 +30,6 @@ const texts = {
 const userLang = navigator.language.slice(0, 2);
 const lang = texts[userLang] ? userLang : "az";
 
-// DOM Elementləri
 const titleEl = document.getElementById("title");
 const subtitleEl = document.getElementById("subtitle");
 const urlInput = document.getElementById("url");
@@ -59,43 +58,6 @@ urlInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") handleDownload();
 });
 
-// --- SNAPTİK VƏ ALTERNATİV APİ-LƏR ---
-
-// API 1: TikWM (SnapTik-in əsas istifadə etdiyi API bazası, HD dəstəkli)
-async function fetchFromTikWM(videoUrl) {
-  const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(videoUrl)}&hd=1`);
-  const data = await response.json();
-  if (data && data.code === 0 && data.data) {
-    return {
-      title: data.data.title,
-      author: data.data.author?.nickname || data.data.author?.unique_id,
-      cover: data.data.cover,
-      sd: data.data.play,
-      hd: data.data.hdplay || data.data.play,
-      music: data.data.music
-    };
-  }
-  throw new Error("TikWM API uğursuz oldu");
-}
-
-// API 2: Alternativ Açıq TikTok API (Ehtiyat server)
-async function fetchFromAlternativeAPI(videoUrl) {
-  const response = await fetch(`https://api.vkrnot.com/tiktok?url=${encodeURIComponent(videoUrl)}`);
-  const data = await response.json();
-  if (data && data.status === "success" && data.data) {
-    return {
-      title: data.data.title || "",
-      author: data.data.author || "",
-      cover: data.data.thumbnail,
-      sd: data.data.play,
-      hd: data.data.hd || data.data.play,
-      music: data.data.music
-    };
-  }
-  throw new Error("Alternativ API uğursuz oldu");
-}
-
-// Əsas Yükləmə Funksiyası (Növbəli API Yoxlaması)
 async function handleDownload() {
   const videoUrl = urlInput.value.trim();
 
@@ -109,17 +71,23 @@ async function handleDownload() {
 
   let videoData = null;
 
-  // Birinci SnapTik əsas API-sini yoxlayırıq
   try {
-    videoData = await fetchFromTikWM(videoUrl);
-  } catch (err1) {
-    console.warn("Birinci API işləmədi, 2-ci ehtiyat API sınanılır...", err1);
-    // Birinci işləməzsə, ikinci API-ni sınayırıq
-    try {
-      videoData = await fetchFromAlternativeAPI(videoUrl);
-    } catch (err2) {
-      console.error("Bütün API-lər xəta verdi:", err2);
+    // SnapTik arxa planındakı əsas işlək API
+    const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(videoUrl)}&hd=1`);
+    const data = await response.json();
+
+    if (data && data.code === 0 && data.data) {
+      videoData = {
+        title: data.data.title,
+        author: data.data.author?.nickname || data.data.author?.unique_id,
+        cover: data.data.cover,
+        sd: data.data.play,
+        hd: data.data.hdplay || data.data.play,
+        music: data.data.music
+      };
     }
+  } catch (err) {
+    console.error("API Fetch Error:", err);
   }
 
   if (videoData) {
@@ -140,7 +108,7 @@ function setLoading(isLoading) {
 function showStatus(message, type) {
   const color = type === "error" ? "#ef4444" : "#3b82f6";
   resultContainer.innerHTML = `
-    <p style="color: ${color}; font-weight: 500; text-align: center; margin-top: 15px; font-size: 0.95rem;">
+    <p style="color: ${color}; font-weight: 500; text-align: center; margin-top: 15px; font-size: 0.95rem; line-height: 1.4;">
       ${message}
     </p>
   `;
@@ -168,22 +136,25 @@ function renderResult(data) {
       }
       
       <div style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- No Watermark SD -->
         <a href="${data.sd}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-          <button type="button" style="background: #2563eb; margin-top: 0; cursor: pointer; width: 100%;">
+          <button type="button" style="background: #2563eb; margin-top: 0; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
             📥 ${texts[lang].noWatermark}
           </button>
         </a>
         
+        <!-- No Watermark HD -->
         <a href="${data.hd}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-          <button type="button" style="background: linear-gradient(135deg, #8b5cf6, #d946ef); margin-top: 0; cursor: pointer; width: 100%;">
+          <button type="button" style="background: linear-gradient(135deg, #8b5cf6, #d946ef); margin-top: 0; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
             ✨ ${texts[lang].hdWatermark}
           </button>
         </a>
 
+        <!-- MP3 Audio -->
         ${
           data.music
             ? `<a href="${data.music}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-                <button type="button" style="background: #10b981; margin-top: 0; cursor: pointer; width: 100%;">
+                <button type="button" style="background: #10b981; margin-top: 0; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
                   🎵 ${texts[lang].downloadAudio}
                 </button>
               </a>`
