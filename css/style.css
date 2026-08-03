@@ -1,16 +1,14 @@
 :root {
-  --bg: #f8fafc;
-  --card-bg: #ffffff;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --primary: #10b981; /* Canlı yaşıl */
-  --primary-hover: #059669;
-  --secondary: #3b82f6; /* Modern mavi */
-  --secondary-hover: #2563eb;
-  --ghost: #f1f5f9;
-  --ghost-hover: #e2e8f0;
-  --border: #e2e8f0;
-  --radius: 16px; /* Daha yumşaq kənarlar */
+  --bg-color: #09090b;
+  --card-bg: rgba(24, 24, 27, 0.6);
+  --text-main: #fafafa;
+  --text-muted: #a1a1aa;
+  --primary: #ec4899; /* TikTok çəhrayısı */
+  --primary-hover: #db2777;
+  --secondary: #06b6d4; /* TikTok mavisi */
+  --secondary-hover: #0891b2;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --radius: 16px;
 }
 
 * {
@@ -18,252 +16,240 @@
   margin: 0;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  -webkit-tap-highlight-color: transparent; /* Mobildə basanda mavi fonu ləğv edir */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background-color: var(--bg);
+  background-color: var(--bg-color);
   color: var(--text-main);
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   min-height: 100vh;
   padding: 20px;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Background Ambient Glow */
+.bg-shape {
+  position: absolute;
+  filter: blur(100px);
+  z-index: -1;
+  opacity: 0.4;
+  border-radius: 50%;
+  animation: float 10s ease-in-out infinite alternate;
+}
+.shape-1 {
+  width: 300px; height: 300px;
+  background: var(--primary);
+  top: -10%; left: -10%;
+}
+.shape-2 {
+  width: 400px; height: 400px;
+  background: var(--secondary);
+  bottom: -10%; right: -10%;
+  animation-delay: -5s;
+}
+
+@keyframes float {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(30px) scale(1.1); }
 }
 
 .container {
   width: 100%;
-  max-width: 500px; /* PC üçün optimal genişlik */
+  max-width: 460px;
+  z-index: 10;
 }
+
+/* Base Animations (GPU Accelerated) */
+.fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hidden { display: none !important; }
 
 /* Header */
-.header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
+.header { text-align: center; margin-bottom: 30px; }
 .logo {
-  font-size: 2.75rem;
+  font-size: 3rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #10b981, #3b82f6);
+  background: linear-gradient(to right, var(--secondary), var(--primary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  letter-spacing: -1px;
+  letter-spacing: -2px;
 }
+.subtitle { color: var(--text-muted); margin-top: 5px; font-size: 0.95rem; }
 
-.subtitle {
-  color: var(--text-muted);
-  font-size: 1rem;
-  margin-top: 8px;
-}
-
-/* Card */
-.card {
+/* Glass Card */
+.glass-card {
   background: var(--card-bg);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   padding: 24px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 /* Input Group */
 .input-group {
   position: relative;
   margin-bottom: 16px;
-  display: flex;
-  align-items: center;
 }
 
 .input-group input {
   width: 100%;
-  padding: 16px 110px 16px 20px; /* Sağdan düymələr üçün böyük boşluq */
-  background: var(--bg);
-  border: 2px solid transparent;
+  padding: 16px 100px 16px 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--glass-border);
   border-radius: 12px;
-  font-size: 1rem;
   color: var(--text-main);
+  font-size: 1rem;
   outline: none;
-  transition: all 0.3s ease;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .input-group input:focus {
-  border-color: var(--primary);
-  background: var(--card-bg);
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.15);
 }
 
-.input-group input::placeholder {
-  color: #94a3b8;
-}
-
-/* Input Actions (Paste & Clear) */
 .input-actions {
   position: absolute;
   right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   gap: 5px;
-  align-items: center;
 }
 
 .action-btn {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.1);
   border: none;
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  font-weight: 600;
-  padding: 8px 12px;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background 0.2s, color 0.2s;
-}
-
-.action-btn:hover {
-  background: var(--ghost);
   color: var(--text-main);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.clear-btn {
-  font-size: 1.1rem;
-  padding: 8px 10px;
-}
+.action-btn:hover { background: rgba(255, 255, 255, 0.2); }
+.clear-btn { padding: 8px 12px; background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+.clear-btn:hover { background: rgba(239, 68, 68, 0.4); }
 
-/* Main Buttons */
+/* Main Button */
 .btn {
   width: 100%;
-  padding: 16px; /* Mobildə rahat basılması üçün geniş */
+  padding: 16px;
   border: none;
   border-radius: 12px;
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: transform 0.1s, background 0.2s;
+  position: relative;
+  overflow: hidden;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   gap: 8px;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s;
+  will-change: transform;
 }
 
-.btn:active {
-  transform: scale(0.98);
-}
+.btn:active { transform: scale(0.96); }
 
 .primary-btn {
-  background-color: var(--primary);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 10px 20px -10px rgba(236, 72, 153, 0.5);
 }
 
-.primary-btn:hover {
-  background-color: var(--primary-hover);
+.primary-btn:hover { opacity: 0.9; }
+
+.secondary-btn { background: var(--secondary); color: white; }
+.ghost-btn { background: rgba(255, 255, 255, 0.1); color: white; }
+.ghost-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* Loader Animation */
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+  gap: 10px;
 }
 
-.secondary-btn {
-  background-color: var(--secondary);
-  color: white;
+.spinner {
+  width: 30px; height: 30px;
+  border: 3px solid rgba(255,255,255,0.1);
+  border-top-color: var(--secondary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-.secondary-btn:hover {
-  background-color: var(--secondary-hover);
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.ghost-btn {
-  background-color: var(--ghost);
-  color: var(--text-main);
-}
-
-.ghost-btn:hover {
-  background-color: var(--ghost-hover);
-}
-
-/* Status Message */
+/* Status */
 .status-msg {
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
-  margin-top: 16px;
+  margin-top: 15px;
   min-height: 20px;
-  font-weight: 500;
 }
 
 /* Result Box */
 .result-box {
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid var(--border);
-  animation: fadeIn 0.3s ease-out;
-}
-
-.result-box.hidden {
-  display: none;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--glass-border);
+  animation: fadeInUp 0.4s ease-out;
 }
 
 .result-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 15px;
 }
 
-.username {
-  font-weight: 700;
-  color: var(--text-main);
-  font-size: 1.05rem;
+.user-info { display: flex; align-items: center; gap: 8px; }
+.avatar-placeholder {
+  width: 24px; height: 24px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: bold;
 }
+.username { font-weight: 700; font-size: 1rem; }
 
 .badge {
-  background-color: #d1fae5;
-  color: #065f46;
-  padding: 6px 12px;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  padding: 4px 10px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
 }
 
-/* Download Options Container */
-.download-options {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+.download-options { display: flex; flex-direction: column; gap: 10px; }
 
-.video-title {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: var(--text-main);
-  font-weight: 500;
-  margin-bottom: 8px;
+.video-thumb {
+  width: 100%; height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 5px;
+  animation: fadeInUp 0.5s ease-out;
 }
 
 /* Footer */
-.footer {
-  text-align: center;
-  margin-top: 40px;
-  font-size: 0.85rem;
-  color: #94a3b8;
-}
-
-/* Mobil Üçün Xüsusi Tənzimləmələr */
-@media (max-width: 480px) {
-  .card {
-    padding: 20px;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-    background: transparent;
-  }
-  
-  body {
-    background-color: var(--card-bg); /* Mobildə kənar rəngləri ləğv edir, təmiz ağ görünür */
-    padding: 10px;
-  }
-
-  .input-group input {
-    background: var(--ghost);
-  }
-}
+.footer { text-align: center; margin-top: 30px; font-size: 0.8rem; color: var(--text-muted); }
