@@ -1,125 +1,74 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok Downloader - No Watermark HD</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>SnapTok</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-    <div class="bg-animation">
-        <div class="gradient-sphere sphere-1"></div>
-        <div class="gradient-sphere sphere-2"></div>
-        <div class="gradient-sphere sphere-3"></div>
-    </div>
-
-    <main class="container">
-        <div class="glass-card">
-            <div class="header">
-                <div class="logo">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/>
-                    </svg>
-                    <h1>TikTok Downloader</h1>
-                </div>
-                <p class="subtitle">No Watermark • HD Quality • Fast Download</p>
-            </div>
-
-            <div class="input-section">
-                <div class="input-wrapper">
-                    <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                    </svg>
-                    <input 
-                        type="url" 
-                        id="videoUrl" 
-                        placeholder="TikTok video linkini yapıştırın..." 
-                        autocomplete="off"
-                    >
-                    <button class="paste-btn" onclick="pasteUrl()" title="Yapıştır">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                </div>
-                <button class="download-btn" id="downloadBtn" onclick="fetchVideo()">
-                    <span class="btn-text">Videoyu İndir</span>
-                    <span class="btn-loader hidden"></span>
-                </button>
-            </div>
-
-            <div class="api-selector">
-                <label class="api-option">
-                    <input type="radio" name="api" value="tikwm" checked>
-                    <span class="api-check"></span>
-                    <span class="api-label">
-                        <strong>TikWM API</strong>
-                        <small>Hızlı & CORS Uyumlu</small>
-                    </span>
-                </label>
-                <label class="api-option">
-                    <input type="radio" name="api" value="snaptik">
-                    <span class="api-check"></span>
-                    <span class="api-label">
-                        <strong>SnapTik.app</strong>
-                        <small>CORS Proxy Gerekli</small>
-                    </span>
-                </label>
-            </div>
-
-            <div class="result-section hidden" id="resultSection">
-                <div class="video-preview">
-                    <video id="previewVideo" controls poster=""></video>
-                    <div class="video-info" id="videoInfo"></div>
-                </div>
-                
-                <div class="download-options">
-                    <button class="option-btn hd-btn" onclick="downloadVideo('hd')">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="7 10 12 15 17 10"/>
-                            <line x1="12" y1="15" x2="12" y2="3"/>
-                        </svg>
-                        HD İndir (MP4)
-                    </button>
-                    <button class="option-btn watermark-btn" onclick="downloadVideo('watermark')">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="2" y1="12" x2="22" y2="12"/>
-                        </svg>
-                        Watermark'lı (Yedek)
-                    </button>
-                </div>
-            </div>
-
-            <div class="error-message hidden" id="errorMessage"></div>
-
-            <div class="features">
-                <div class="feature">
-                    <div class="feature-icon">🚫</div>
-                    <span>No Watermark</span>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🎬</div>
-                    <span>HD Kalite</span>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">⚡</div>
-                    <span>Hızlı</span>
-                </div>
-            </div>
+  <main class="app">
+    <section class="card">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">S</div>
+        <div>
+          <h1 id="title">SnapTok</h1>
+          <p id="subtitle">Simple, fast and clean link tool.</p>
         </div>
+      </div>
 
-        <footer>
-            <p>GitHub Pages ile host edilmiştir • Frontend-only</p>
-            <p class="cors-notice">⚠️ SnapTik.app seçeneği için CORS proxy gereklidir</p>
-        </footer>
-    </main>
+      <div class="hero">
+        <h2 id="heroTitle">Paste your link</h2>
+        <p id="heroText">Minimal design, fast input, no clutter.</p>
+      </div>
 
-    <script src="js/script.js"></script>
+      <label class="sr-only" for="url">Link</label>
+      <input
+        id="url"
+        type="text"
+        inputmode="url"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="https://..."
+      />
+
+      <div class="actions">
+        <button id="pasteBtn" class="btn secondary" type="button">Paste</button>
+        <button id="clearBtn" class="btn ghost" type="button">Clear</button>
+      </div>
+
+      <button id="downloadBtn" class="btn primary" type="button">Download</button>
+
+      <div id="status" class="status" aria-live="polite">
+        Ready when you are.
+      </div>
+
+      <div id="result" class="result hidden">
+        <div class="result-head">
+          <strong id="resultTitle">Ready</strong>
+          <span id="resultBadge" class="badge">Idle</span>
+        </div>
+        <p id="resultText">Your result will appear here.</p>
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <strong id="f1t">No clutter</strong>
+          <span id="f1s">Simple interface</span>
+        </div>
+        <div class="feature">
+          <strong id="f2t">Fast UI</strong>
+          <span id="f2s">Lightweight</span>
+        </div>
+        <div class="feature">
+          <strong id="f3t">Mobile friendly</strong>
+          <span id="f3s">Responsive layout</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/script.js"></script>
 </body>
-</html>
+    </html>
