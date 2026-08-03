@@ -3,47 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SnapTok - TikTok Video Downloader</title>
+    <title>SnapTok - No Watermark TikTok Downloader</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <main class="container">
+    <!-- Background Animated Shapes -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <main class="container fade-in-up">
         <!-- Header -->
         <header class="header">
             <h1 class="logo">SnapTok</h1>
-            <p class="subtitle">Download TikTok videos without watermark</p>
+            <p class="subtitle">Download TikTok videos in HD without watermark</p>
         </header>
 
-        <!-- Downloader Card -->
-        <div class="card">
+        <!-- Main Card -->
+        <div class="glass-card">
             <div class="input-group">
-                <input type="url" id="url" placeholder="Paste TikTok link here..." autocomplete="off">
+                <input type="url" id="url" placeholder="Paste video link here..." autocomplete="off">
                 <div class="input-actions">
                     <button id="pasteBtn" class="action-btn" title="Paste link">Paste</button>
-                    <button id="clearBtn" class="action-btn clear-btn" title="Clear">✕</button>
+                    <button id="clearBtn" class="action-btn clear-btn hidden" title="Clear">✕</button>
                 </div>
             </div>
 
-            <button id="downloadBtn" class="btn primary-btn">Get Video</button>
+            <button id="downloadBtn" class="btn primary-btn pulse-anim">
+                <span>Download Now</span>
+            </button>
 
-            <!-- Status -->
-            <p id="status" class="status-msg">Ready to download.</p>
+            <!-- Loading Spinner (Hidden by default) -->
+            <div id="loader" class="loader-container hidden">
+                <div class="spinner"></div>
+                <p>Processing video...</p>
+            </div>
 
-            <!-- Results -->
+            <!-- Status Indicator -->
+            <p id="status" class="status-msg">Ready when you are.</p>
+
+            <!-- Results Box (Hidden by default) -->
             <div id="result" class="result-box hidden">
                 <div class="result-header">
-                    <span id="resultTitle" class="username">@user</span>
-                    <span class="badge">No Watermark</span>
+                    <div class="user-info">
+                        <span class="avatar-placeholder">@</span>
+                        <span id="resultTitle" class="username">user</span>
+                    </div>
+                    <span class="badge">Success</span>
                 </div>
                 
-                <div id="resultContent"></div>
+                <div id="resultContent" class="stagger-in"></div>
             </div>
         </div>
         
         <!-- Footer -->
         <footer class="footer">
-            <p>&copy; 2026 SnapTok — Fast & Secure</p>
+            <p>&copy; 2026 SnapTok — Super Fast & Free</p>
         </footer>
     </main>
 
