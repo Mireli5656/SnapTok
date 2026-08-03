@@ -1,27 +1,31 @@
 :root {
-  --bg-color: #f3f4f6;
+  --bg: #f8fafc;
   --card-bg: #ffffff;
-  --text-main: #1f2937;
-  --text-muted: #6b7280;
-  --primary-color: #10b981; /* Yaşıl */
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --primary: #10b981; /* Canlı yaşıl */
   --primary-hover: #059669;
-  --secondary-color: #3b82f6; /* Mavi */
+  --secondary: #3b82f6; /* Modern mavi */
   --secondary-hover: #2563eb;
-  --border-color: #e5e7eb;
-  --border-radius: 12px;
+  --ghost: #f1f5f9;
+  --ghost-hover: #e2e8f0;
+  --border: #e2e8f0;
+  --radius: 16px; /* Daha yumşaq kənarlar */
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-tap-highlight-color: transparent; /* Mobildə basanda mavi fonu ləğv edir */
 }
 
 body {
-  background-color: var(--bg-color);
+  background-color: var(--bg);
   color: var(--text-main);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
@@ -30,99 +34,124 @@ body {
 
 .container {
   width: 100%;
-  max-width: 450px;
+  max-width: 500px; /* PC üçün optimal genişlik */
 }
 
 /* Header */
 .header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 32px;
 }
 
 .logo {
-  font-size: 2.5rem;
+  font-size: 2.75rem;
   font-weight: 800;
-  color: var(--primary-color);
+  background: linear-gradient(135deg, #10b981, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   letter-spacing: -1px;
 }
 
 .subtitle {
   color: var(--text-muted);
-  font-size: 0.95rem;
-  margin-top: 5px;
+  font-size: 1rem;
+  margin-top: 8px;
 }
 
 /* Card */
-.downloader-card {
+.card {
   background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  padding: 25px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
 }
 
-/* Input */
-.input-wrapper {
+/* Input Group */
+.input-group {
   position: relative;
+  margin-bottom: 16px;
   display: flex;
-  margin-bottom: 15px;
+  align-items: center;
 }
 
-.input-wrapper input {
+.input-group input {
   width: 100%;
-  padding: 15px 100px 15px 15px; /* Düymələr üçün sağdan boşluq */
-  border: 2px solid var(--border-color);
-  border-radius: var(--border-radius);
+  padding: 16px 110px 16px 20px; /* Sağdan düymələr üçün böyük boşluq */
+  background: var(--bg);
+  border: 2px solid transparent;
+  border-radius: 12px;
   font-size: 1rem;
+  color: var(--text-main);
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.3s ease;
 }
 
-.input-wrapper input:focus {
-  border-color: var(--primary-color);
+.input-group input:focus {
+  border-color: var(--primary);
+  background: var(--card-bg);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 }
 
-/* Input Buttons */
-.action-btn {
+.input-group input::placeholder {
+  color: #94a3b8;
+}
+
+/* Input Actions (Paste & Clear) */
+.input-actions {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  right: 10px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.action-btn {
   background: transparent;
   border: none;
   color: var(--text-muted);
+  font-size: 0.95rem;
   font-weight: 600;
+  padding: 8px 12px;
   cursor: pointer;
-  padding: 5px 10px;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
 }
 
 .action-btn:hover {
+  background: var(--ghost);
   color: var(--text-main);
 }
 
-#pasteBtn {
-  right: 35px;
-}
-
 .clear-btn {
-  right: 5px;
   font-size: 1.1rem;
+  padding: 8px 10px;
 }
 
 /* Main Buttons */
 .btn {
   width: 100%;
-  padding: 14px;
+  padding: 16px; /* Mobildə rahat basılması üçün geniş */
   border: none;
-  border-radius: var(--border-radius);
-  font-size: 1rem;
+  border-radius: 12px;
+  font-size: 1.05rem;
   font-weight: 600;
-  color: white;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: transform 0.1s, background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn:active {
+  transform: scale(0.98);
 }
 
 .primary-btn {
-  background-color: var(--primary-color);
+  background-color: var(--primary);
+  color: white;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
 }
 
 .primary-btn:hover {
@@ -130,7 +159,8 @@ body {
 }
 
 .secondary-btn {
-  background-color: var(--secondary-color);
+  background-color: var(--secondary);
+  color: white;
 }
 
 .secondary-btn:hover {
@@ -138,64 +168,102 @@ body {
 }
 
 .ghost-btn {
-  background-color: var(--text-muted);
+  background-color: var(--ghost);
+  color: var(--text-main);
 }
 
 .ghost-btn:hover {
-  background-color: #4b5563;
+  background-color: var(--ghost-hover);
 }
 
-/* Status */
+/* Status Message */
 .status-msg {
   text-align: center;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
-  margin-top: 15px;
+  margin-top: 16px;
   min-height: 20px;
+  font-weight: 500;
 }
 
 /* Result Box */
-.result-section {
-  margin-top: 25px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border-color);
+.result-box {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  animation: fadeIn 0.3s ease-out;
 }
 
-.result-section.hidden {
+.result-box.hidden {
   display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .result-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
 .username {
   font-weight: 700;
   color: var(--text-main);
+  font-size: 1.05rem;
 }
 
 .badge {
   background-color: #d1fae5;
   color: #065f46;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 600;
 }
 
+/* Download Options Container */
 .download-options {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+}
+
+.video-title {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-main);
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 
 /* Footer */
 .footer {
   text-align: center;
-  margin-top: 30px;
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  margin-top: 40px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+/* Mobil Üçün Xüsusi Tənzimləmələr */
+@media (max-width: 480px) {
+  .card {
+    padding: 20px;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+  
+  body {
+    background-color: var(--card-bg); /* Mobildə kənar rəngləri ləğv edir, təmiz ağ görünür */
+    padding: 10px;
+  }
+
+  .input-group input {
+    background: var(--ghost);
+  }
 }
