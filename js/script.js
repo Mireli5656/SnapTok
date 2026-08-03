@@ -2,47 +2,62 @@ const urlInput = document.getElementById("url");
 const pasteBtn = document.getElementById("pasteBtn");
 const clearBtn = document.getElementById("clearBtn");
 const downloadBtn = document.getElementById("downloadBtn");
+const loader = document.getElementById("loader");
 const statusBox = document.getElementById("status");
 const resultBox = document.getElementById("result");
 const resultTitle = document.getElementById("resultTitle");
 const resultContent = document.getElementById("resultContent");
 
+// Helper function: Update status
 function setStatus(text, color = "var(--text-muted)") {
   statusBox.textContent = text;
   statusBox.style.color = color;
 }
 
+// Helper function: Extract URL
 function extractFirstUrl(text) {
   const match = text.match(/https?:\/\/[^\s]+/i);
   return match ? match[0].trim() : "";
 }
 
-// Paste logic
-pasteBtn.addEventListener("click", async () => {
-  try {
-    const text = await navigator.clipboard.readText();
-    if (!text) {
-      setStatus("Clipboard is empty.", "#ef4444");
-      return;
-    }
-    urlInput.value = text.trim();
-    setStatus("Link pasted successfully.", "#10b981");
-  } catch {
-    setStatus("Could not paste automatically. Long press to paste.", "#ef4444");
+// Input observer to show/hide clear button
+urlInput.addEventListener("input", () => {
+  if (urlInput.value.trim().length > 0) {
+    clearBtn.classList.remove("hidden");
+    pasteBtn.classList.add("hidden");
+  } else {
+    clearBtn.classList.add("hidden");
+    pasteBtn.classList.remove("hidden");
+    resultBox.classList.add("hidden");
+    setStatus("Ready when you are.");
   }
 });
 
-// Clear logic
+// Paste action
+pasteBtn.addEventListener("click", async () => {
+  try {
+    const text = await navigator.clipboard.readText();
+    if (!text) throw new Error("empty");
+    urlInput.value = text.trim();
+    
+    // Trigger input event manually
+    urlInput.dispatchEvent(new Event('input'));
+    setStatus("Link pasted successfully!", "#34d399");
+  } catch {
+    setStatus("Tap and hold input field to paste manually.", "#f87171");
+  }
+});
+
+// Clear action
 clearBtn.addEventListener("click", () => {
   urlInput.value = "";
-  setStatus("Ready to download.", "var(--text-muted)");
-  resultBox.classList.add("hidden");
+  urlInput.dispatchEvent(new Event('input'));
   urlInput.focus();
 });
 
-// Download File Logic
+// File Downloader Core
 async function downloadFile(fileUrl, fileName) {
-  setStatus("Downloading, please wait...", "#3b82f6");
+  setStatus("Downloading to your device...", "#38bdf8");
   try {
     const res = await fetch(fileUrl);
     const blob = await res.blob();
@@ -57,10 +72,10 @@ async function downloadFile(fileUrl, fileName) {
     
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
-    setStatus("Download complete!", "#10b981");
+    setStatus("Download completed! 🎉", "#34d399");
   } catch (e) {
     window.open(fileUrl, "_blank");
-    setStatus("Video opened in a new tab.", "#10b981");
+    setStatus("File opened in a new tab.", "#34d399");
   }
 }
 
@@ -70,16 +85,18 @@ downloadBtn.addEventListener("click", async () => {
   const value = extractFirstUrl(rawValue);
 
   if (!value || !value.includes("tiktok.com")) {
-    setStatus("Please enter a valid TikTok link.", "#ef4444");
+    setStatus("Invalid link. Please paste a TikTok URL.", "#f87171");
     resultBox.classList.add("hidden");
     return;
   }
 
   urlInput.value = value;
-  setStatus("Fetching video data...", "#3b82f6");
-  downloadBtn.disabled = true;
-  downloadBtn.style.opacity = "0.7";
+  
+  // UI State: Loading
+  downloadBtn.classList.add("hidden");
   resultBox.classList.add("hidden");
+  loader.classList.remove("hidden");
+  setStatus("Connecting to server...", "#38bdf8");
 
   try {
     const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(value)}&hd=1`);
@@ -90,46 +107,38 @@ downloadBtn.addEventListener("click", async () => {
 
       const resultHTML = `
         <div class="download-options">
-          ${video.cover ? `<img src="${video.cover}" alt="Cover" style="width: 100%; max-height: 220px; object-fit: cover; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border);" />` : ""}
-          <p class="video-title">${video.title || "TikTok Video"}</p>
+          ${video.cover ? `<img src="${video.cover}" class="video-thumb" alt="Cover" />` : ""}
+          <p style="font-size: 0.9rem; margin-bottom: 5px; color: #fff;">
+            ${video.title ? video.title.substring(0, 60) + "..." : "TikTok Video"}
+          </p>
           
-          <button id="normalDlBtn" class="btn primary-btn">📥 Download Video (No Watermark)</button>
-          
-          ${video.hdplay ? `<button id="hdDlBtn" class="btn secondary-btn">🎥 Download HD Video</button>` : ""}
-          
-          ${video.music ? `<button id="audioDlBtn" class="btn ghost-btn">🎵 Download Audio (MP3)</button>` : ""}
+          <button id="normalDlBtn" class="btn primary-btn">📥 Save Video (Fast)</button>
+          ${video.hdplay ? `<button id="hdDlBtn" class="btn secondary-btn">🎥 Save Video (HD)</button>` : ""}
+          ${video.music ? `<button id="audioDlBtn" class="btn ghost-btn">🎵 Save Audio (MP3)</button>` : ""}
         </div>
       `;
 
-      resultTitle.textContent = `@${video.author?.unique_id || "tiktok_user"}`;
+      resultTitle.textContent = video.author?.unique_id || "tiktok_user";
       resultContent.innerHTML = resultHTML;
+      
+      // UI State: Success
+      loader.classList.add("hidden");
       resultBox.classList.remove("hidden");
-      setStatus("Choose format to download:", "#10b981");
+      downloadBtn.classList.remove("hidden");
+      setStatus("Select format below:", "#34d399");
 
-      // Attach events
-      document.getElementById("normalDlBtn").addEventListener("click", () => {
-        downloadFile(video.play, `SnapTok_${video.id}.mp4`);
-      });
-
-      if (video.hdplay) {
-        document.getElementById("hdDlBtn").addEventListener("click", () => {
-          downloadFile(video.hdplay, `SnapTok_${video.id}_HD.mp4`);
-        });
-      }
-
-      if (video.music) {
-        document.getElementById("audioDlBtn").addEventListener("click", () => {
-          downloadFile(video.music, `SnapTok_${video.id}.mp3`);
-        });
-      }
+      // Attach dynamic events
+      document.getElementById("normalDlBtn").addEventListener("click", () => downloadFile(video.play, `SnapTok_${video.id}.mp4`));
+      if (video.hdplay) document.getElementById("hdDlBtn").addEventListener("click", () => downloadFile(video.hdplay, `SnapTok_HD_${video.id}.mp4`));
+      if (video.music) document.getElementById("audioDlBtn").addEventListener("click", () => downloadFile(video.music, `SnapTok_${video.id}.mp3`));
 
     } else {
-      setStatus("Video not found or link is private.", "#ef4444");
+      throw new Error("Private");
     }
   } catch (err) {
-    setStatus("Error fetching video. Try again later.", "#ef4444");
-  } finally {
-    downloadBtn.disabled = false;
-    downloadBtn.style.opacity = "1";
+    // UI State: Error
+    loader.classList.add("hidden");
+    downloadBtn.classList.remove("hidden");
+    setStatus("Video not found or is private.", "#f87171");
   }
 });
