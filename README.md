@@ -32,8 +32,8 @@ You can host **SnapTok** for free using GitHub Pages by following these steps:
    - **Source:** Select `Deploy from a branch`.
    - **Branch:** Select `main` (or `master`) and keep the root `/` folder.
 5. Click **Save**.
-6. Wait 1–2 minutes, and your site will be live at:
-   `https://Mireli5656.github.io/SnapTok/` 🎉
+6. Live Demo
+https://Mireli5656.github.io/SnapTok/ 🎉
 
 ---
 
