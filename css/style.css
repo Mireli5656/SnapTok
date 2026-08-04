@@ -1,7 +1,7 @@
 :root {
   --bg: #0f172a;
   --bg-2: #060b14;
-  --card: rgba(15, 23, 42, 0.9);
+  --card: rgba(15, 23, 42, 0.95);
   --border: rgba(148, 163, 184, 0.14);
   --text: #e5e7eb;
   --muted: #94a3b8;
@@ -9,7 +9,7 @@
   --accent-2: #3b82f6;
   --surface: rgba(2, 6, 23, 0.72);
   --shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
-  --radius: 24px;
+  --radius: 20px;
 }
 
 * {
@@ -18,58 +18,48 @@
 
 html, body {
   margin: 0;
+  padding: 0;
+  width: 100%;
   min-height: 100%;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background:
     radial-gradient(circle at top, rgba(59, 130, 246, 0.16), transparent 32%),
     linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
   color: var(--text);
-}
-
-body {
-  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .app {
   min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 16px 12px;
 }
 
 .card {
-  width: min(100%, 760px);
+  width: 100%;
+  max-width: 600px;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   backdrop-filter: blur(14px);
-  padding: 24px;
-  animation: fadeIn 0.22s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  padding: 20px 16px;
+  margin: auto 0;
 }
 
 .brand {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   align-items: center;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
 .logo {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
   display: grid;
   place-items: center;
   background: linear-gradient(135deg, var(--accent), #22c55e);
@@ -84,7 +74,7 @@ h1, h2, p {
 }
 
 h1 {
-  font-size: clamp(1.7rem, 4vw, 2.3rem);
+  font-size: 1.5rem;
   line-height: 1.1;
 }
 
@@ -94,29 +84,30 @@ h1 {
 .feature span,
 .result p {
   color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .hero {
   display: grid;
-  gap: 8px;
-  margin-bottom: 18px;
+  gap: 6px;
+  margin-bottom: 16px;
 }
 
 .hero h2 {
-  font-size: clamp(1.1rem, 3vw, 1.45rem);
+  font-size: 1.2rem;
 }
 
 input {
   width: 100%;
-  min-height: 58px;
+  min-height: 52px;
   border: 1px solid rgba(148, 163, 184, 0.18);
   background: var(--surface);
   color: var(--text);
-  border-radius: 18px;
-  padding: 0 16px;
-  font-size: 1rem;
+  border-radius: 14px;
+  padding: 0 14px;
+  font-size: 0.95rem;
   outline: none;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  transition: border-color 0.18s ease;
 }
 
 input::placeholder {
@@ -125,38 +116,46 @@ input::placeholder {
 
 input:focus {
   border-color: rgba(59, 130, 246, 0.82);
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.16);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16);
 }
 
 .actions {
   display: flex;
   gap: 10px;
-  margin-top: 12px;
-  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.actions .btn {
+  flex: 1;
 }
 
 .btn {
   border: 0;
-  border-radius: 16px;
+  border-radius: 14px;
   min-height: 48px;
-  padding: 0 16px;
+  padding: 0 14px;
   font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
   user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-sizing: border-box;
 }
 
 .btn:active {
-  transform: translateY(1px);
+  transform: scale(0.98);
 }
 
 .primary {
   width: 100%;
-  min-height: 58px;
-  margin-top: 14px;
+  min-height: 54px;
+  margin-top: 12px;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: white;
-  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
 }
 
 .secondary {
@@ -172,20 +171,21 @@ input:focus {
 }
 
 .status {
-  margin-top: 14px;
-  padding: 14px 16px;
-  border-radius: 16px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
   background: rgba(2, 6, 23, 0.34);
   border: 1px solid rgba(148, 163, 184, 0.1);
-  min-height: 52px;
+  min-height: 46px;
   display: flex;
   align-items: center;
+  font-size: 0.88rem;
 }
 
 .result {
   margin-top: 14px;
-  padding: 16px;
-  border-radius: 18px;
+  padding: 14px;
+  border-radius: 16px;
   background: rgba(2, 6, 23, 0.52);
   border: 1px solid rgba(148, 163, 184, 0.12);
 }
@@ -198,7 +198,7 @@ input:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 10px;
 }
 
@@ -206,32 +206,38 @@ input:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 28px;
-  padding: 0 10px;
+  min-height: 24px;
+  padding: 0 8px;
   border-radius: 999px;
   background: rgba(59, 130, 246, 0.14);
   color: #dbeafe;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   border: 1px solid rgba(59, 130, 246, 0.18);
 }
 
 .features {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 18px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .feature {
-  padding: 14px;
-  border-radius: 18px;
+  padding: 10px 8px;
+  border-radius: 14px;
   background: rgba(15, 23, 42, 0.5);
   border: 1px solid rgba(148, 163, 184, 0.1);
+  text-align: center;
 }
 
 .feature strong {
   display: block;
-  margin-bottom: 4px;
+  font-size: 0.82rem;
+  margin-bottom: 2px;
+}
+
+.feature span {
+  font-size: 0.72rem;
 }
 
 .sr-only {
@@ -246,25 +252,23 @@ input:focus {
   white-space: nowrap;
 }
 
-@media (max-width: 640px) {
+/* Mobil Telefon Ekrani Ucun Tam Mesuliyyetli Adaptasiya */
+@media (max-width: 600px) {
   .app {
-    padding: 14px;
+    padding: 8px;
   }
 
   .card {
-    padding: 18px;
-    border-radius: 20px;
+    padding: 16px 12px;
+    border-radius: 16px;
   }
 
   .features {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
   }
 
-  .actions {
-    flex-direction: column;
-  }
-
-  .btn {
-    width: 100%;
+  .feature {
+    padding: 8px 4px;
   }
 }
