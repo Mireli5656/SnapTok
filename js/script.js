@@ -46,7 +46,7 @@ const i18n = {
     dlNoWm: "Download (No Watermark)",
     dlHd: "Download (HD No Watermark)",
     dlMusic: "Download MP3",
-    preparing: "Preparing download..."
+    downloading: "Downloading file..."
   },
   az: {
     subtitle: "Sadə, sürətli və pulsuz TikTok video yükləyici.",
@@ -74,7 +74,7 @@ const i18n = {
     dlNoWm: "Download (No Watermark)",
     dlHd: "Download (HD No Watermark)",
     dlMusic: "Download MP3",
-    preparing: "Yükləmə hazırlanır..."
+    downloading: "Fayl yüklənir..."
   }
 };
 
@@ -122,27 +122,42 @@ function extractFirstUrl(text) {
   return match ? match[0].trim() : "";
 }
 
-// Mobil brauzerin masaüstünə keçməsinin qarşısını alan Gizli Iframe Yükləmə Funksiyası
-function downloadMobileFriendly(fileUrl) {
-  setStatus(t.preparing, "#60a5fa");
+// Güvənli Blob Yükləmə Funksiyası (Səhifədən çıxmadan faylı birbaşa endirir)
+async function forceDownload(fileUrl, fileName, btnElement) {
+  const originalText = btnElement.innerHTML;
+  btnElement.disabled = true;
+  btnElement.innerHTML = `⏳ ${t.downloading}`;
+  setStatus(t.downloading, "#60a5fa");
 
-  // Əgər keçid nisbidirsə domeni əlavə edirik
-  const fullUrl = fileUrl.startsWith("http") ? fileUrl : `https://www.tikwm.com${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
+  try {
+    const fullUrl = fileUrl.startsWith("http") ? fileUrl : `https://www.tikwm.com${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
+    
+    // Direct fetch overlay
+    const res = await fetch(fullUrl);
+    const blob = await res.blob();
+    
+    const blobUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.style.display = "none";
+    a.href = blobUrl;
+    a.download = fileName;
+    
+    document.body.appendChild(a);
+    a.click();
+    
+    window.URL.revokeObjectURL(blobUrl);
+    document.body.removeChild(a);
 
-  // Keçidi yeni pəncərədə YOX, gizli iframe-də çağırırıq ki, mobil görünüş pozulmasın
-  let iframe = document.getElementById("downloadIframe");
-  if (!iframe) {
-    iframe = document.createElement("iframe");
-    iframe.id = "downloadIframe";
-    iframe.style.display = "none";
-    document.body.appendChild(iframe);
+    setStatus(lang === "az" ? "Yükləmə tamamlandı!" : "Download complete!", "#4ade80");
+  } catch (err) {
+    console.error(err);
+    // Əgər fetch/CORS bloku olarsa fallback olaraq birbaşa keçid açırıq
+    const fullUrl = fileUrl.startsWith("http") ? fileUrl : `https://www.tikwm.com${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
+    window.location.href = fullUrl;
+  } finally {
+    btnElement.disabled = false;
+    btnElement.innerHTML = originalText;
   }
-
-  iframe.src = fullUrl;
-
-  setTimeout(() => {
-    setStatus(lang === "az" ? "Yükləmə başladıldı!" : "Download started!", "#4ade80");
-  }, 1000);
 }
 
 pasteBtn.addEventListener("click", async () => {
@@ -240,19 +255,15 @@ downloadBtn.addEventListener("click", async () => {
 
       showResult(t.resultTitle, t.resultBadge, resultHtml);
 
-      // Düymələrə kliklədikdə səhifəni/tabı yeniləmədən arxa fonda endirir
-      document.getElementById("btnHd").onclick = () => {
-        downloadMobileFriendly(hdPath);
-      };
+      // Düymələrə kliklədikdə forceDownload çağırılır
+      const btnHd = document.getElementById("btnHd");
+      const btnNoWm = document.getElementById("btnNoWm");
+      const btnMusic = document.getElementById("btnMusic");
 
-      document.getElementById("btnNoWm").onclick = () => {
-        downloadMobileFriendly(playPath);
-      };
-
-      if (musicPath) {
-        document.getElementById("btnMusic").onclick = () => {
-          downloadMobileFriendly(musicPath);
-        };
+      btnHd.onclick = () => forceDownload(hdPath, `snaptok_${video.id}_hd.mp4`, btnHd);
+      btnNoWm.onclick = () => forceDownload(playPath, `snaptok_${video.id}.mp4`, btnNoWm);
+      if (btnMusic) {
+        btnMusic.onclick = () => forceDownload(musicPath, `snaptok_${video.id}.mp3`, btnMusic);
       }
 
     } else {
