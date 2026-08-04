@@ -34,22 +34,22 @@ const i18n = {
     cleared: "Cleared.",
     valid: "Link detected.",
     invalid: "Please enter a valid TikTok link.",
-    loading: "Fetching video from TikTok servers...",
-    resultTitle: "SnapTok - Ready to Download",
+    loading: "Fetching video info...",
+    resultTitle: "SnapTok",
     resultBadge: "No Watermark",
     f1t: "No Watermark",
     f1s: "Clean video output",
     f2t: "HD Quality",
-    f2s: "Original resolution",
-    f3t: "Direct Save",
-    f3s: "Downloads instantly",
-    dlServer1: "Download Server 01 (HD No-Watermark)",
-    dlServer2: "Download Server 02 (Full HD)",
-    dlAudio: "Download Audio (MP3)",
-    downloading: "Preparing file download..."
+    f2s: "Best resolution",
+    f3t: "Mobile Friendly",
+    f3s: "Works on all devices",
+    dlNoWm: "Download (No Watermark)",
+    dlHd: "Download (HD No Watermark)",
+    dlMusic: "Download MP3",
+    preparing: "Preparing download..."
   },
   az: {
-    subtitle: "Sadə, sürətli və təmiz TikTok video yükləyici.",
+    subtitle: "Sadə, sürətli və pulsuz TikTok video yükləyici.",
     heroTitle: "TikTok linkini yapışdır",
     heroText: "Videoları filiqransız və HD keyfiyyətdə endir.",
     placeholder: "https://www.tiktok.com/@user/video/...",
@@ -62,19 +62,19 @@ const i18n = {
     cleared: "Təmizləndi.",
     valid: "Link aşkarlandı.",
     invalid: "Zəhmət olmasa düzgün TikTok linki daxil et.",
-    loading: "TikTok serverlərindən video məlumatı alınır...",
-    resultTitle: "SnapTok - Yükləməyə Hazırdır",
+    loading: "Video məlumatları yüklənir...",
+    resultTitle: "SnapTok",
     resultBadge: "Filiqransız",
     f1t: "Filiqransız",
     f1s: "Təmiz video formatı",
     f2t: "HD Keyfiyyət",
-    f2s: "Orijinal çəkiliş",
-    f3t: "Direkt Endirmə",
-    f3s: "Cihaza dərhal yazılır",
-    dlServer1: "Download Server 01 (HD No-Watermark)",
-    dlServer2: "Download Server 02 (Full HD)",
-    dlAudio: "Download Audio (MP3)",
-    downloading: "Fayl cihaza endirilir..."
+    f2s: "Yüksək keyfiyyət",
+    f3t: "Mobil Uyğun",
+    f3s: "Bütün cihazlarda işləyir",
+    dlNoWm: "Download (No Watermark)",
+    dlHd: "Download (HD No Watermark)",
+    dlMusic: "Download MP3",
+    preparing: "Yükləmə hazırlanır..."
   }
 };
 
@@ -122,44 +122,34 @@ function extractFirstUrl(text) {
   return match ? match[0].trim() : "";
 }
 
-// SnapTik stili - faylı brauzerdə pleyer açmadan dərhal cihaza indirmək
-async function forceDownload(fileUrl, filename) {
-  setStatus(t.downloading, "#3b82f6");
+// Mobil brauzerin masaüstünə keçməsinin qarşısını alan Gizli Iframe Yükləmə Funksiyası
+function downloadMobileFriendly(fileUrl) {
+  setStatus(t.preparing, "#60a5fa");
 
-  try {
-    // Media faylını fon rejimində Blob olaraq yükləyirik
-    const response = await fetch(fileUrl);
-    if (!response.ok) throw new Error("Fetch failed");
-    
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
+  // Əgər keçid nisbidirsə domeni əlavə edirik
+  const fullUrl = fileUrl.startsWith("http") ? fileUrl : `https://www.tikwm.com${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
 
-    const link = document.createElement("a");
-    link.href = blobUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
-    setStatus(lang === "az" ? "Yükləmə tamamlandı! 🎉" : "Download complete! 🎉", "#4ade80");
-  } catch (err) {
-    // Əgər brauzer Blob almağa imkan verməzsə, pəncərə tullanmadan kənar yükləmə yönləndirməsi
-    const a = document.createElement("a");
-    a.href = fileUrl;
-    a.target = "_blank";
-    a.download = filename;
-    a.click();
-    setStatus(lang === "az" ? "Endirmə başladıldı!" : "Download initiated!", "#4ade80");
+  // Keçidi yeni pəncərədə YOX, gizli iframe-də çağırırıq ki, mobil görünüş pozulmasın
+  let iframe = document.getElementById("downloadIframe");
+  if (!iframe) {
+    iframe = document.createElement("iframe");
+    iframe.id = "downloadIframe";
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
   }
+
+  iframe.src = fullUrl;
+
+  setTimeout(() => {
+    setStatus(lang === "az" ? "Yükləmə başladıldı!" : "Download started!", "#4ade80");
+  }, 1000);
 }
 
-// Clipboard-dan yapışdırma
 pasteBtn.addEventListener("click", async () => {
   try {
     const text = await navigator.clipboard.readText();
     if (!text) {
-      setStatus(lang === "az" ? "Müqəvva boşdur." : "Clipboard is empty.", "#f87171");
+      setStatus(lang === "az" ? "Clipboard boşdur." : "Clipboard is empty.", "#f87171");
       return;
     }
 
@@ -168,13 +158,12 @@ pasteBtn.addEventListener("click", async () => {
     setStatus(t.pasted, "#4ade80");
   } catch {
     setStatus(
-      lang === "az" ? "Xahiş olunur linki əllə yapışdırın." : "Please paste the link manually.",
+      lang === "az" ? "Clipboard oxunmadı. Linki əl ilə yapışdırın." : "Clipboard access failed. Paste it manually.",
       "#f87171"
     );
   }
 });
 
-// Təmizləmə
 clearBtn.addEventListener("click", () => {
   urlInput.value = "";
   setStatus(t.cleared);
@@ -191,7 +180,6 @@ urlInput.addEventListener("input", () => {
   }
 });
 
-// TikTok videosunu emal etmə və SnapTik düymələrini yaratma
 downloadBtn.addEventListener("click", async () => {
   const rawValue = urlInput.value.trim();
   const value = extractFirstUrl(rawValue);
@@ -207,71 +195,73 @@ downloadBtn.addEventListener("click", async () => {
   downloadBtn.disabled = true;
 
   try {
-    // API sorğusu
-    const apiRes = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(value)}&hd=1`);
-    const data = await apiRes.json();
+    const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(value)}&hd=1`);
+    const data = await response.json();
 
     if (data.code === 0 && data.data) {
-      const v = data.data;
-      const noWmUrl = v.play;
-      const hdUrl = v.hdplay || v.play;
-      const musicUrl = v.music;
-      const cover = v.cover;
-      const titleText = v.title || "TikTok_Video";
-      const authorName = v.author?.nickname || v.author?.unique_id || "user";
+      const video = data.data;
+      
+      const playPath = video.play; 
+      const hdPath = video.hdplay || video.play; 
+      const musicPath = video.music;
+      const coverImg = video.cover;
+      const videoTitle = video.title || "snaptok_video";
+      const author = video.author?.unique_id || "user";
 
-      setStatus(lang === "az" ? "Məlumat tapıldı! Server seçin:" : "Video ready! Choose server:", "#4ade80");
+      setStatus(lang === "az" ? "Video hazır!" : "Video ready!", "#4ade80");
 
-      const html = `
-        <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 16px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 14px;">
-          <img src="${cover}" alt="Cover" style="width: 75px; height: 75px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);" />
-          <div style="overflow: hidden;">
-            <strong style="display: block; font-size: 0.95rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${titleText}</strong>
-            <span style="font-size: 0.85rem; color: var(--muted);">👤 @${authorName}</span>
+      const resultHtml = `
+        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 14px;">
+          <img src="${coverImg}" alt="Cover" style="width: 65px; height: 65px; border-radius: 12px; object-fit: cover;" />
+          <div>
+            <strong style="display: block; font-size: 0.95rem; color: var(--text);">${videoTitle.slice(0, 40)}...</strong>
+            <span style="font-size: 0.85rem; color: var(--muted);">@${author}</span>
           </div>
         </div>
 
         <div style="display: grid; gap: 10px;">
-          <button id="server1Btn" class="btn primary" type="button" style="text-align: center; justify-content: center;">
-            🚀 ${t.dlServer1}
-          </button>
-          
-          <button id="server2Btn" class="btn secondary" type="button" style="text-align: center; justify-content: center;">
-            ⚡ ${t.dlServer2}
+          <button id="btnHd" class="btn primary" type="button" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            ${t.dlHd}
           </button>
 
-          ${musicUrl ? `
-            <button id="audioBtn" class="btn ghost" type="button" style="text-align: center; justify-content: center;">
-              🎵 ${t.dlAudio}
+          <button id="btnNoWm" class="btn secondary" type="button" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            ${t.dlNoWm}
+          </button>
+
+          ${musicPath ? `
+            <button id="btnMusic" class="btn ghost" type="button" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+              🎵 ${t.dlMusic}
             </button>
-          ` : ""}
+          ` : ''}
         </div>
       `;
 
-      showResult(t.resultTitle, t.resultBadge, html);
+      showResult(t.resultTitle, t.resultBadge, resultHtml);
 
-      // SnapTik stili düymə klikləri (Cihaza birbaşa yükləmə)
-      document.getElementById("server1Btn").onclick = () => {
-        forceDownload(hdUrl, `SnapTok_HD_${v.id}.mp4`);
+      // Düymələrə kliklədikdə səhifəni/tabı yeniləmədən arxa fonda endirir
+      document.getElementById("btnHd").onclick = () => {
+        downloadMobileFriendly(hdPath);
       };
 
-      document.getElementById("server2Btn").onclick = () => {
-        forceDownload(noWmUrl, `SnapTok_${v.id}.mp4`);
+      document.getElementById("btnNoWm").onclick = () => {
+        downloadMobileFriendly(playPath);
       };
 
-      if (musicUrl) {
-        document.getElementById("audioBtn").onclick = () => {
-          forceDownload(musicUrl, `SnapTok_Audio_${v.id}.mp3`);
+      if (musicPath) {
+        document.getElementById("btnMusic").onclick = () => {
+          downloadMobileFriendly(musicPath);
         };
       }
 
     } else {
-      setStatus(lang === "az" ? "Video tapılmadı və ya link şəxsi (private) videodur." : "Video not found or link is private.", "#f87171");
+      setStatus(lang === "az" ? "Video tapılmadı və ya link yalnışdır." : "Video not found or invalid link.", "#f87171");
       hideResult();
     }
-  } catch (err) {
-    console.error(err);
-    setStatus(lang === "az" ? "Xəta baş verdi. Linki yoxlayıb yenidən cəhd edin." : "Error fetching video. Please check link.", "#f87171");
+  } catch (error) {
+    console.error(error);
+    setStatus(lang === "az" ? "Xəta baş verdi. Yenidən cəhd edin." : "Error fetching video. Try again.", "#f87171");
     hideResult();
   } finally {
     downloadBtn.disabled = false;
