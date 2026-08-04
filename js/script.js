@@ -21,52 +21,58 @@ const f3s = document.getElementById("f3s");
 
 const i18n = {
   en: {
-    subtitle: "Simple, fast and clean link tool.",
-    heroTitle: "Paste your link",
-    heroText: "Minimal design, fast input, no clutter.",
-    placeholder: "https://...",
+    subtitle: "Simple, fast and clean TikTok downloader.",
+    heroTitle: "Paste your TikTok link",
+    heroText: "Download high quality videos without watermark.",
+    placeholder: "https://www.tiktok.com/@user/video/...",
     paste: "Paste",
     clear: "Clear",
     download: "Download",
     ready: "Ready when you are.",
-    noLink: "No link found.",
+    noLink: "No valid link found.",
     pasted: "Link inserted.",
     cleared: "Cleared.",
     valid: "Link detected.",
-    invalid: "Please enter a valid link.",
-    resultTitle: "Ready",
-    resultBadge: "Idle",
-    resultText: "Your result will appear here.",
-    f1t: "No clutter",
-    f1s: "Simple interface",
-    f2t: "Fast UI",
-    f2s: "Lightweight",
-    f3t: "Mobile friendly",
-    f3s: "Responsive layout"
+    invalid: "Please enter a valid TikTok link.",
+    loading: "Fetching video info...",
+    resultTitle: "Video Ready",
+    resultBadge: "Success",
+    f1t: "No Watermark",
+    f1s: "Clean video output",
+    f2t: "HD Quality",
+    f2s: "Best available resolution",
+    f3t: "Mobile Friendly",
+    f3s: "Works on all devices",
+    dlNoWm: "Download (No Watermark)",
+    dlHd: "Download (HD No Watermark)",
+    dlMusic: "Download Audio (MP3)"
   },
   az: {
-    subtitle: "Sadə, sürətli və təmiz link aləti.",
-    heroTitle: "Linki yapışdır",
-    heroText: "Minimal dizayn, sürətli giriş, artıq heç nə yoxdur.",
-    placeholder: "https://...",
+    subtitle: "Sadə, sürətli və pulsuz TikTok video yükləyici.",
+    heroTitle: "TikTok linkini yapışdır",
+    heroText: "Videoları filiqransız və HD keyfiyyətdə endir.",
+    placeholder: "https://www.tiktok.com/@user/video/...",
     paste: "Yapışdır",
     clear: "Təmizlə",
     download: "Yüklə",
     ready: "Hazırsan.",
-    noLink: "Link tapılmadı.",
+    noLink: "Düzgün link tapılmadı.",
     pasted: "Link əlavə edildi.",
     cleared: "Təmizləndi.",
     valid: "Link aşkarlandı.",
-    invalid: "Zəhmət olmasa düzgün link daxil et.",
-    resultTitle: "Hazır",
-    resultBadge: "Boş",
-    resultText: "Nəticə burada görünəcək.",
-    f1t: "Artıq yoxdur",
-    f1s: "Sadə interfeys",
-    f2t: "Sürətli UI",
-    f2s: "Yüngül",
-    f3t: "Mobil uyğun",
-    f3s: "Responsive dizayn"
+    invalid: "Zəhmət olmasa düzgün TikTok linki daxil et.",
+    loading: "Video məlumatları yüklənir...",
+    resultTitle: "Video Hazırdır",
+    resultBadge: "Uğurlu",
+    f1t: "Filiqransız",
+    f1s: "Təmiz video formatı",
+    f2t: "HD Keyfiyyət",
+    f2s: "Ən yüksək keyfiyyət",
+    f3t: "Mobil Uyğun",
+    f3s: "Bütün cihazlarda işləyir",
+    dlNoWm: "Yüklə (Filiqransız)",
+    dlHd: "Yüklə (HD Filiqransız)",
+    dlMusic: "Audionu Yüklə (MP3)"
   }
 };
 
@@ -86,7 +92,6 @@ downloadBtn.textContent = t.download;
 statusBox.textContent = t.ready;
 resultTitle.textContent = t.resultTitle;
 resultBadge.textContent = t.resultBadge;
-resultText.textContent = t.resultText;
 f1t.textContent = t.f1t;
 f1s.textContent = t.f1s;
 f2t.textContent = t.f2t;
@@ -150,30 +155,68 @@ urlInput.addEventListener("input", () => {
   }
 });
 
-downloadBtn.addEventListener("click", () => {
+downloadBtn.addEventListener("click", async () => {
   const rawValue = urlInput.value.trim();
   const value = extractFirstUrl(rawValue);
 
-  if (!rawValue) {
-    setStatus(lang === "az" ? "Zəhmət olmasa linki daxil et." : "Please paste a link first.", "#f87171");
-    hideResult();
-    return;
-  }
-
-  if (!value) {
-    setStatus(t.noLink, "#f87171");
+  if (!rawValue || !value) {
+    setStatus(t.invalid, "#f87171");
     hideResult();
     return;
   }
 
   urlInput.value = value;
-  setStatus(lang === "az" ? "Hazırlanır..." : "Processing...", "#60a5fa");
+  setStatus(t.loading, "#60a5fa");
+  downloadBtn.disabled = true;
 
-  showResult(
-    t.resultTitle,
-    "UI",
-    lang === "az"
-      ? "Bu hissə təmiz arayüz üçündür. Sonradan öz qanuni backend-inlə qoşa bilərsən."
-      : "This part is for the clean UI. You can connect your own compliant backend later."
-  );
+  try {
+    // TikWM API endpoint
+    const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(value)}&hd=1`);
+    const data = await response.json();
+
+    if (data.code === 0 && data.data) {
+      const video = data.data;
+      const playUrl = video.play; // Normal No-watermark
+      const hdUrl = video.hdplay || video.play; // HD No-watermark
+      const musicUrl = video.music; // MP3
+      const coverImg = video.cover;
+      const videoTitle = video.title || "TikTok Video";
+
+      setStatus(lang === "az" ? "Məlumatlar alındı!" : "Video ready!", "#4ade80");
+
+      const resultHtml = `
+        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+          <img src="${coverImg}" alt="Cover" style="width: 70px; height: 70px; border-radius: 12px; object-fit: cover;" />
+          <div>
+            <strong style="display: block; font-size: 0.95rem; color: var(--text);">${videoTitle}</strong>
+            <span style="font-size: 0.85rem; color: var(--muted);">@${video.author?.unique_id || 'user'}</span>
+          </div>
+        </div>
+        <div style="display: grid; gap: 8px;">
+          <a href="${hdUrl}" target="_blank" download class="btn primary" style="display: flex; align-items: center; justify-content: center; text-decoration: none;">
+            ✨ ${t.dlHd}
+          </a>
+          <a href="${playUrl}" target="_blank" download class="btn secondary" style="display: flex; align-items: center; justify-content: center; text-decoration: none;">
+            📹 ${t.dlNoWm}
+          </a>
+          ${musicUrl ? `
+            <a href="${musicUrl}" target="_blank" download class="btn ghost" style="display: flex; align-items: center; justify-content: center; text-decoration: none;">
+              🎵 ${t.dlMusic}
+            </a>
+          ` : ''}
+        </div>
+      `;
+
+      showResult(t.resultTitle, t.resultBadge, resultHtml);
+    } else {
+      setStatus(lang === "az" ? "Video tapılmadı və ya link yalnışdır." : "Video not found or invalid link.", "#f87171");
+      hideResult();
+    }
+  } catch (error) {
+    console.error(error);
+    setStatus(lang === "az" ? "Xəta baş verdi. Yenidən cəhd edin." : "Error fetching video. Try again.", "#f87171");
+    hideResult();
+  } finally {
+    downloadBtn.disabled = false;
+  }
 });
